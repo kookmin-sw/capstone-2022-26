@@ -77,4 +77,3 @@ This project is to make independent integrated music ranking chart with reduced 
 ## 6. 최종 시연 영상
 
   - 최종 시연 영상 
-  - 
