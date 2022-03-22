@@ -16,7 +16,8 @@
 
 ## 2. Abstract
 There are various music streaming services but some of them show ranking charts that are biased towards a particular music field or artist.
-This project is to reduce bias and make independent integrated music ranking chart by analyzing the data of three typical music streaming services which are Melon, Bugs and Genie.
+
+This project is to make independent integrated music ranking chart with reduced bias by analyzing the data of three typical music streaming services which are Melon, Bugs and Genie.
    
   
 
