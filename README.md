@@ -1,6 +1,6 @@
 # 멜벅지
   
-  팀페이지 주소 : https://github.com/kookmin-sw/capstone-2022-26
+  팀페이지 주소 : https://kookmin-sw.github.io/capstone-2022-26/
   
   
 ## 1. 프로젝트 소개 
@@ -37,7 +37,7 @@
  
  ```
  * 학번: ****1626
- * 역할: 
+ * 역할: Backend Data analysis
  * E-mail: ppttbb9461@kookmin.ac.kr
  ```
 
@@ -63,20 +63,20 @@
  * E-mail: seophillip10@gmail.com
  ```
 
- - 이름  
+ - 이인호
  
  
-  ```
- * 학번: 
- * 역할: 
- * E-mail: 
  ```
- ## 5. 사용법
+ * 학번: ****1675
+ * 역할: Backend Engineer
+ * E-mail: inhoking@kookmin.ac.kr
+ ```
+## 5. 사용법
 
 
 - 
 
- ## 6. 최종 시연 영상
+## 6. 최종 시연 영상
 
   - 최종 시연 영상 
   
