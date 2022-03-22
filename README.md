@@ -54,14 +54,13 @@
  
 
 
-- 서필립  
- 
+- 서필립
 
  
-  ```
- * 학번: ****
- * 역할: 
- * E-mail: 
+ ```
+ * 학번: ****1631
+ * 역할: Backend Data analysis, Design
+ * E-mail: seophillip10@gmail.com
  ```
 
  - 이름  
