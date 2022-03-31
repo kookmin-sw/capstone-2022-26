@@ -1,5 +1,13 @@
 from rest_framework import serializers
+from .models import Chart, Track
 
-class DataSerializer(serializers.ModelSerializer):
+class ChartSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = '__all__'
+        model = Chart
+        fields = ('id', 'name', 'artist', 'rank', 'like', 'img_url')
+
+class TrackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Track
+        fields = ('id', 'name', 'artist', 'genre', 'img_url', 'daybefore_rank', 'yesterday_rank', 'today_rank')
+
