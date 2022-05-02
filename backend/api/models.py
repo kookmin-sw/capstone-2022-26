@@ -2,11 +2,12 @@ from django.db import models
 
 # Create your models here.
 class Chart(models.Model):
-    name = models.CharField(max_length=50)
+    sid = models.CharField(max_length=50, primary_key=True)
+    rank = models.CharField(max_length=50)
+    song = models.CharField(max_length=50)
     artist = models.CharField(max_length=50)
-    rank = models.IntegerField()
-    like = models.IntegerField()
-    img_url = models.URLField(unique=True)
+    like = models.CharField(max_length=50)
+    coverImg = models.URLField()
 
 class Track(models.Model):
     name = models.CharField(max_length=50)
