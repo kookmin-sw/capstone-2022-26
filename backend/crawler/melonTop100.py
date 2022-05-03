@@ -41,8 +41,9 @@ def melonTop100():
         song = song_tag.select_one('a[href*=playSong]').text
         artist = song_tag.select_one('a[href*=goArtistDetail]').text
         album = song_tag.select_one('a[href*=goAlbumDetail]')['title']
-        rank = song_tag.select_one('.rank').text
-
+        rank = int(song_tag.select_one('.rank').text)
+        crawlingTime = datetime.now()
+        # crawlingTime = timezone.make_aware(crawlingTime)
         #album 커버 저장
         # createFolder('./melon_cover')
         # urlretrieve(coverImg, './melon_cover/'+song+".png")
@@ -50,18 +51,18 @@ def melonTop100():
         now = datetime.now()
 
         song = {
-            'sid':  song + str(now.timestamp()),
             'songNo': songNo,
             'rank': rank,
             'song': song,
             'artist': artist,
             'album': album,
             'coverImg': coverImg,
+            'crawlingTime': crawlingTime
         }
 
         song_list.append(song)
 
-    song_df = pd.DataFrame(song_list, columns=['sid', 'rank', 'songNo', 'album', 'song', 'artist', 'coverImg']).set_index('songNo')
+    song_df = pd.DataFrame(song_list, columns=['rank', 'songNo', 'album', 'song', 'artist', 'coverImg', 'crawlingTime']).set_index('songNo')
 
 
     song_id_list = song_df.index
@@ -80,21 +81,15 @@ def melonTop100():
     return song_df
 
 def saveDB(item):
-    sql = """SELECT * FROM api_chart WHERE sid = '""" + escape_string(item['sid']) + """';"""
-    if cursor.execute(sql) == 0:
-        # sql = """INSERT INTO api_chart(id,rank,song,artist,heart,coverImg)
-        #         VALUES (%s %s %s %s %s %s)"""
-        # val = (item['id'],item['rank'],item['song'],item['artist'],item['heart'],item['coverImg'])
-        sql = """INSERT INTO api_chart VALUES(
-            
-        '""" + escape_string(item['sid']) + """',
-        '""" + item['rank'] + """',
+    sql = """INSERT INTO api_melon VALUES(
+        NULL,
+        '""" + str(item['rank']) + """',
         '""" + escape_string(item['song']) + """',
         '""" + escape_string(item['artist']) + """',
         '""" + str(item['heart']) + """',
-        '""" + item['coverImg'] + """')"""
-        print(sql)
-        cursor.execute(sql)
+        '""" + item['coverImg'] + """',
+        '""" + str(item['crawlingTime']) + """')"""
+    cursor.execute(sql)
 
 melon100 = melonTop100()
 song_dict = dict()
@@ -103,16 +98,13 @@ db = pymysql.connect(host=config('DB_HOST'), port=int(config('DB_PORT')), user=c
 cursor = db.cursor()
 
 for i in range (100):
-    song_dict['sid'] = melon100.iloc[i]['sid']
     song_dict['rank'] = melon100.iloc[i]['rank']
     song_dict['song'] = melon100.iloc[i]['song']
     song_dict['artist'] = melon100.iloc[i]['artist']
     song_dict['heart'] = melon100.iloc[i]['heart']
     song_dict['coverImg'] = melon100.iloc[i]['coverImg']
+    song_dict['crawlingTime'] = melon100.iloc[i]['crawlingTime']
     saveDB(song_dict)
-    # print(melon100.iloc[i]['rank'], melon100.iloc[i]['song'], melon100.iloc[i]['artist'], melon100.iloc[i]['heart'], melon100.iloc[i]['coverImg'])
 
 db.commit()
 db.close()
-# print(song_dict)
-# print(sum(melon100['heart']))

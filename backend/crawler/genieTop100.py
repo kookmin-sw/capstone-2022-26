@@ -2,6 +2,10 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.request import urlretrieve
 import os
+import pymysql
+from datetime import datetime
+from decouple import config
+from pymysql.converters import escape_string
 
 def createFolder(directory):
     try:
@@ -28,13 +32,15 @@ def genieCrawling():
     list_song = []
     list_artist = []
     list_cover = []
+    list_rank = []
 
     for tr in trs:
-        rank = tr.select_one('td.number').text[0:2].strip()
+        rank = int(tr.select_one('td.number').text[0:2].strip())
         title = tr.select_one('td.info > a.title.ellipsis').text.replace("19금\n", "").strip()
         artist = tr.select_one('td.info > a.artist.ellipsis').text
         cover = "https:" + tr.select_one('td > a img')['src']
 
+        list_rank.append(rank)
         list_song.append(title)
         list_artist.append(artist)
         list_cover.append(cover)
@@ -54,26 +60,25 @@ def genieCrawling():
 
 
     for tr in trs:
-        rank = tr.select_one('td.number').text[0:2].strip()
+        rank = int(tr.select_one('td.number').text[0:3].strip())
         title = tr.select_one('td.info > a.title.ellipsis').text.replace("19금\n", "").strip()
         artist = tr.select_one('td.info > a.artist.ellipsis').text
         cover = "https:" + tr.select_one('td > a img')['src']
 
+        list_rank.append(rank)
         list_song.append(title)
-
         list_artist.append(artist)
         list_cover.append(cover)
-    print(list_song)
-    return list_song, list_artist, list_cover, url_list
+    return list_rank, list_song, list_artist, list_cover, url_list
 
 def genieHeart(list_song, list_cover, url_list):
     headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
 
     #앨범 커버 저장
-    createFolder('./genie_cover')
+    # createFolder('./genie_cover')
 
-    for i in range(100):
-        urlretrieve(list_cover[i], './genie_cover/' +  list_song[i]+ ".png")
+    # for i in range(100):
+    #     urlretrieve(list_cover[i], './genie_cover/' +  list_song[i]+ ".png")
 
     list_heart = []
 
@@ -88,11 +93,32 @@ def genieHeart(list_song, list_cover, url_list):
 
     return list_heart
 
+def saveDB(item):
+    sql = """INSERT INTO api_genie VALUES(
+        NULL,
+        '""" + str(item['rank']) + """',
+        '""" + escape_string(item['song']) + """',
+        '""" + escape_string(item['artist']) + """',
+        '""" + str(item['heart']) + """',
+        '""" + item['coverImg'] + """',
+        '""" + str(item['crawlingTime']) + """')"""
+    cursor.execute(sql)
 
-song, artist, cover, url = genieCrawling()
-heart = genieHeart(song,  cover, url)
+rank, song, artist, cover, url = genieCrawling()
+heart = genieHeart(song, cover, url)
+song_dict = dict()
 
-print(song)
-print(artist)
-print(heart)
-print(sum(heart))
+db = pymysql.connect(host=config('DB_HOST'), port=int(config('DB_PORT')), user=config('DB_USER'), password=config('DB_PASSWORD'), db=config('DB_NAME'), charset='utf8')
+cursor = db.cursor()
+
+for i in range (100):
+    song_dict['rank'] = rank[i]
+    song_dict['song'] = song[i]
+    song_dict['artist'] = artist[i]
+    song_dict['heart'] = heart[i]
+    song_dict['coverImg'] = cover[i]
+    song_dict['crawlingTime'] = datetime.now()
+    saveDB(song_dict)
+
+db.commit()
+db.close()

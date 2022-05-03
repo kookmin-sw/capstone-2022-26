@@ -4,38 +4,54 @@ from rest_framework.response import Response
 from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from .models import Chart, Track
-from .serializer import ChartSerializer, TrackSerializer
+from .models import Melon, Genie, Bugs
+from .serializer import MelonSerializer, GenieSerializer, BugsSerializer
 from rest_framework.views import APIView
 
 # Create your views here.
 class ChartView(viewsets.ViewSet):
-    queryset = Chart.objects.all()
+    melon_queryset = Melon.objects
+    bugs_queryset = Bugs.objects
+    genie_queryset = Genie.objects
 
     def list(self, request):
-        chartData = {'tracks': [{'track': 'GANADARA (Feat. 아이유)', 'artist': '박재범', 'rank': 1, 'img_url':'https://cdnimg.melon.co.kr/cm2/album/images/108/89/981/10889981_20220311110820_500.jpg/melon/resize/120/quality/80/optimize'}]}
+        chartData = {'name':'통합', 'artist': 'a', 'rank': 1, 'like':1, 'img_url':'https://aa.com'}
         return Response(chartData)
     
 
     @action(detail=False, methods=['get'])
     def melon(self, request):
-        melonChartData = {'site':'Melon', 'tracks': [{'track': 'GANADARA (Feat. 아이유)', 'artist': '박재범', 'rank': 1, 'like':86592, 'img_url':'https://cdnimg.melon.co.kr/cm2/album/images/108/89/981/10889981_20220311110820_500.jpg/melon/resize/120/quality/80/optimize'}]}
-        return Response(melonChartData)
+        queryset = self.melon_queryset.order_by('-id')[:100]
+        # queryset = queryset.order_by('id')
+        serialized_melon = MelonSerializer(queryset, many=True)
+        return Response(data=serialized_melon.data)
 
     @action(detail=False, methods=['get'])
     def bugs(self, request):
-        chartData = {'name':'bugs', 'artist': 'a', 'rank': 1, 'like':1, 'img_url':'https://aa.com'}
-        return Response(chartData)
+        queryset = self.genie_queryset.order_by('-id')[:100]
+        serialized_genie = BugsSerializer(queryset, many=True)
+        return Response(data=serialized_genie.data)
 
     @action(detail=False, methods=['get'])
     def genie(self, request):
-        chartData = {'name':'genie', 'artist': 'a', 'rank': 1, 'like':1, 'img_url':'https://aa.com'}
-        return Response(chartData)
+        queryset = self.bugs_queryset.order_by('-id')[:100]
+        serialized_genie = GenieSerializer(queryset, many=True)
+        return Response(data=serialized_genie.data)
 
 
 class TrackView(APIView):
-    queryset = Track.objects.all()
     def get(self, request, pk):
         param = request.GET.get('artist')
-        trackData = {'track':pk, 'artist': param, 'rank': [{'site': 'Melon', 'dayBefore': 2, 'yesterday': 2, 'today': 1}, {'site': 'Bugs', 'dayBefore': 3, 'yesterday': 4, 'today': 4}, {'site': 'Genie', 'dayBefore': 2, 'yesterday': 2, 'today': 3}]}
-        return Response(trackData)
+        melon_queryset = Melon.objects.filter(song=pk, artist=param)
+        bugs_queryset = Bugs.objects.filter(song=pk, artist=param)
+        genie_queryset = Genie.objects.filter(song=pk, artist=param)
+
+        serialized_melon = MelonSerializer(melon_queryset, many=True)
+        serialized_bugs = MelonSerializer(bugs_queryset, many=True)
+        serialized_genie = MelonSerializer(genie_queryset, many=True)
+
+        trackData = {'track':pk, 'artist':param, 'rank': [{'site': 'Melon', 'dayBefore': serialized_melon.data[0]['rank'], 'yesterday': serialized_melon.data[1]['rank'], 'today': serialized_melon.data[2]['rank']},
+        {'site': 'Bugs', 'dayBefore': serialized_bugs.data[0]['rank'], 'yesterday': serialized_bugs.data[1]['rank'], 'today': serialized_bugs.data[2]['rank']},
+        {'site': 'Genie', 'dayBefore': serialized_genie.data[0]['rank'], 'yesterday': serialized_genie.data[1]['rank'], 'today': serialized_genie.data[2]['rank']}]}
+
+        return Response(data=trackData)

@@ -1,13 +1,17 @@
 from rest_framework import serializers
-from .models import Chart, Track
+from .models import Melon, Bugs, Genie
 
-class ChartSerializer(serializers.ModelSerializer):
+class MelonSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Chart
-        fields = ('id', 'name', 'artist', 'rank', 'like', 'img_url')
+        model = Melon
+        fields = ('rank', 'song', 'artist', 'like', 'coverImg', 'crawlingTime')
 
-class TrackSerializer(serializers.ModelSerializer):
+class GenieSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Track
-        fields = ('id', 'name', 'artist', 'genre', 'img_url', 'daybefore_rank', 'yesterday_rank', 'today_rank')
+        model = Genie
+        fields = ('rank', 'song', 'artist', 'like', 'coverImg', 'crawlingTime')
 
+class BugsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bugs
+        fields = ('rank', 'song', 'artist', 'like', 'coverImg', 'crawlingTime')
