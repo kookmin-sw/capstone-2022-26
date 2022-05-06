@@ -80,7 +80,9 @@ def melonTop100():
 
     return song_df
 
+# Function for saving to DB
 def saveDB(item):
+    # DB에 저장하는 Query문
     sql = """INSERT INTO api_melon VALUES(
         NULL,
         '""" + str(item['rank']) + """',
@@ -92,11 +94,13 @@ def saveDB(item):
     cursor.execute(sql)
 
 melon100 = melonTop100()
-song_dict = dict()
+song_dict = dict() 
 
+# AWS RDS(MySQL) DB 연결
 db = pymysql.connect(host=config('DB_HOST'), port=int(config('DB_PORT')), user=config('DB_USER'), password=config('DB_PASSWORD'), db=config('DB_NAME'), charset='utf8')
 cursor = db.cursor()
 
+# 각 곡에 대한 data 저장
 for i in range (100):
     song_dict['rank'] = melon100.iloc[i]['rank']
     song_dict['song'] = melon100.iloc[i]['song']

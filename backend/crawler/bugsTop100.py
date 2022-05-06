@@ -63,7 +63,9 @@ def bugsHeart(list_song, list_cover, url_list):
 
     return list_heart
 
+# Function for saving to DB
 def saveDB(item):
+    # DB에 저장하는 Query문
     sql = """INSERT INTO api_bugs VALUES(
         NULL,
         '""" + str(item['rank']) + """',
@@ -78,9 +80,11 @@ rank, song, artist, cover, url = bugsCrawling()
 heart = bugsHeart(song, cover, url)
 song_dict = dict()
 
+# AWS RDS(MySQL) DB 연결
 db = pymysql.connect(host=config('DB_HOST'), port=int(config('DB_PORT')), user=config('DB_USER'), password=config('DB_PASSWORD'), db=config('DB_NAME'), charset='utf8')
 cursor = db.cursor()
 
+# 각 곡에 대한 data 저장
 for i in range (100):
     song_dict['rank'] = rank[i]
     song_dict['song'] = song[i]
