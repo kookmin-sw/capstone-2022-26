@@ -9,6 +9,8 @@ class Melon(models.Model):
     coverImg = models.URLField()
     date = models.DateTimeField()
     time = models.IntegerField()
+    weight = models.FloatField(default=0)
+
 
 class Bugs(models.Model):
     rank = models.IntegerField()
@@ -18,6 +20,7 @@ class Bugs(models.Model):
     coverImg = models.URLField()
     date = models.DateTimeField()
     time = models.IntegerField()
+    weight = models.FloatField(default=0)
     
 class Genie(models.Model):
     rank = models.IntegerField()
@@ -27,3 +30,4 @@ class Genie(models.Model):
     coverImg = models.URLField()
     date = models.DateTimeField()
     time = models.IntegerField()
+    weight = models.FloatField(default=0)

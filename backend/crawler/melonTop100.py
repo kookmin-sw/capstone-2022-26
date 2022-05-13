@@ -78,35 +78,3 @@ def melonTop100():
         
     return list_rank, list_song, list_artist, list_cover, list_heart
 
-# Function for saving to DB
-def saveDB(item):
-    # DB에 저장하는 Query문
-    sql = """INSERT INTO api_melon VALUES(
-        NULL,
-        '""" + str(item['rank']) + """',
-        '""" + escape_string(item['song']) + """',
-        '""" + escape_string(item['artist']) + """',
-        '""" + str(item['heart']) + """',
-        '""" + item['coverImg'] + """',
-        '""" + str(item['crawlingTime']) + """')"""
-    cursor.execute(sql)
-
-rank, song, artist, cover, heart = melonTop100()
-song_dict = dict() 
-
-# AWS RDS(MySQL) DB 연결
-db = pymysql.connect(host=config('DB_HOST'), port=int(config('DB_PORT')), user=config('DB_USER'), password=config('DB_PASSWORD'), db=config('DB_NAME'), charset='utf8')
-cursor = db.cursor()
-
-# 각 곡에 대한 data 저장
-for i in range (100):
-    song_dict['rank'] = rank[i]
-    song_dict['song'] = song[i]
-    song_dict['artist'] = artist[i]
-    song_dict['heart'] = heart[i]
-    song_dict['coverImg'] = cover[i]
-    song_dict['crawlingTime'] = datetime.now()
-    saveDB(song_dict)
-
-db.commit()
-db.close()

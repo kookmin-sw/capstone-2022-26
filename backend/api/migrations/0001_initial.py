@@ -22,6 +22,7 @@ class Migration(migrations.Migration):
                 ('coverImg', models.URLField()),
                 ('date', models.DateTimeField()),
                 ('time', models.IntegerField()),
+                ('weight', models.FloatField()),
             ],
         ),
         migrations.CreateModel(
@@ -35,6 +36,7 @@ class Migration(migrations.Migration):
                 ('coverImg', models.URLField()),
                 ('date', models.DateTimeField()),
                 ('time', models.IntegerField()),
+                ('weight', models.FloatField()),
             ],
         ),
         migrations.CreateModel(
@@ -48,6 +50,7 @@ class Migration(migrations.Migration):
                 ('coverImg', models.URLField()),
                 ('date', models.DateTimeField()),
                 ('time', models.IntegerField()),
+                ('weight', models.FloatField()),
             ],
         ),
     ]
