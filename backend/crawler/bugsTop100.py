@@ -1,20 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
-from urllib.request import urlretrieve
-import os
 import pymysql
 from datetime import datetime
 from decouple import config
 from pymysql.converters import escape_string
-
-
-def createFolder(directory):
-    try:
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-    except OSError:
-        print ('Error: Creating directory. ' +  directory)
-
 
 def bugsCrawling():
     headers = {
@@ -43,12 +32,6 @@ def bugsCrawling():
 
 def bugsHeart(list_song, list_cover, url_list):
     headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
-
-    #앨범 커버 저장
-    # createFolder('./bugs_cover')
-
-    # for i in range(100):
-    #     urlretrieve(list_cover[i], './bugs_cover/' +  list_song[i]+ ".png")
 
     list_heart = []
 

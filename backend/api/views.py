@@ -62,8 +62,11 @@ class TrackView(APIView):
         serialized_bugs = MelonSerializer(bugs_queryset, many=True)
         serialized_genie = MelonSerializer(genie_queryset, many=True)
 
-        trackData = {'track':pk, 'artist':param, 'rank': [{'site': 'Melon', 'dayBefore': serialized_melon.data[0]['rank'], 'yesterday': serialized_melon.data[1]['rank'], 'today': serialized_melon.data[2]['rank']},
-        {'site': 'Bugs', 'dayBefore': serialized_bugs.data[0]['rank'], 'yesterday': serialized_bugs.data[1]['rank'], 'today': serialized_bugs.data[2]['rank']},
-        {'site': 'Genie', 'dayBefore': serialized_genie.data[0]['rank'], 'yesterday': serialized_genie.data[1]['rank'], 'today': serialized_genie.data[2]['rank']}]}
+        if melon_queryset.exists() and bugs_queryset.exists() and genie_queryset.exists():
+            trackData = {'track':pk, 'artist':param, 'rank': [{'site': 'Melon', 'dayBefore': serialized_melon.data[0]['rank'], 'yesterday': serialized_melon.data[1]['rank'], 'today': serialized_melon.data[2]['rank']},
+            {'site': 'Bugs', 'dayBefore': serialized_bugs.data[0]['rank'], 'yesterday': serialized_bugs.data[1]['rank'], 'today': serialized_bugs.data[2]['rank']},
+            {'site': 'Genie', 'dayBefore': serialized_genie.data[0]['rank'], 'yesterday': serialized_genie.data[1]['rank'], 'today': serialized_genie.data[2]['rank']}]}
 
-        return Response(data=trackData)
+            return Response(data=trackData)
+        else:
+            return Response()
