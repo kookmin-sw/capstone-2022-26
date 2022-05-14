@@ -55,7 +55,7 @@ for i in range (100):
     bugsSong_dict['artist'] = bugsArtist[i]
     bugsSong_dict['heart'] = bugsHeart[i]
     bugsSong_dict['coverImg'] = bugsCover[i]
-    bugsSong_dict['date'] = datetime.now()
+    bugsSong_dict['date'] = datetime.now().date()
     bugsSong_dict['time'] = datetime.now().time()
     bugsSong_dict['weight'] = (101-bugsRank[i])*bugsWeight
     saveDB("bugs", bugsSong_dict)
@@ -65,7 +65,7 @@ for i in range (100):
     genieSong_dict['artist'] = genieArtist[i]
     genieSong_dict['heart'] = genieHeart[i]
     genieSong_dict['coverImg'] = genieCover[i]
-    genieSong_dict['date'] = datetime.now()
+    genieSong_dict['date'] = datetime.now().date()
     genieSong_dict['time'] = datetime.now().time()
     genieSong_dict['weight'] = (101-genieRank[i])*genieWeight
     saveDB("genie", genieSong_dict)
@@ -75,7 +75,7 @@ for i in range (100):
     melonSong_dict['artist'] = melonArtist[i]
     melonSong_dict['heart'] = melonHeart[i]
     melonSong_dict['coverImg'] = melonCover[i]
-    melonSong_dict['date'] = datetime.now()
+    melonSong_dict['date'] = datetime.now().date()
     melonSong_dict['time'] = datetime.now().time()
     melonSong_dict['weight'] = (101 - melonRank[i]) * melonWeight
     saveDB("melon", melonSong_dict)

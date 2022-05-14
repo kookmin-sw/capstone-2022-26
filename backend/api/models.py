@@ -7,7 +7,7 @@ class Melon(models.Model):
     artist = models.CharField(max_length=50)
     like = models.IntegerField()
     coverImg = models.URLField()
-    date = models.DateTimeField()
+    date = models.DateField()
     time = models.IntegerField()
     weight = models.FloatField(default=0)
 
@@ -18,7 +18,7 @@ class Bugs(models.Model):
     artist = models.CharField(max_length=50)
     like = models.IntegerField()
     coverImg = models.URLField()
-    date = models.DateTimeField()
+    date = models.DateField()
     time = models.IntegerField()
     weight = models.FloatField(default=0)
     
@@ -28,6 +28,6 @@ class Genie(models.Model):
     artist = models.CharField(max_length=50)
     like = models.IntegerField()
     coverImg = models.URLField()
-    date = models.DateTimeField()
+    date = models.DateField()
     time = models.IntegerField()
     weight = models.FloatField(default=0)
