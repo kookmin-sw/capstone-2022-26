@@ -4,38 +4,118 @@ from rest_framework.response import Response
 from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from .models import Chart, Track
-from .serializer import ChartSerializer, TrackSerializer
+from .models import Melon, Genie, Bugs
+from .serializer import MelonSerializer, GenieSerializer, BugsSerializer
 from rest_framework.views import APIView
+from datetime import datetime, timedelta
 
-# Create your views here.
+# 통합 차트 및 3개 차트 View
 class ChartView(viewsets.ViewSet):
-    queryset = Chart.objects.all()
+    melon_queryset = Melon.objects
+    bugs_queryset = Bugs.objects
+    genie_queryset = Genie.objects
 
     def list(self, request):
-        chartData = {'tracks': [{'track': 'GANADARA (Feat. 아이유)', 'artist': '박재범', 'rank': 1, 'img_url':'https://cdnimg.melon.co.kr/cm2/album/images/108/89/981/10889981_20220311110820_500.jpg/melon/resize/120/quality/80/optimize'}]}
+        # 가중치를 이용한 통합 순위 계산(미구현) 
+        melon_all = self.melon_queryset.all()
+        bugs_all = self.bugs_queryset.all()
+        genie_all = self.genie_queryset.all()
+        chartData = {'name':'통합', 'artist': 'a', 'rank': 1, 'like':1, 'img_url':'https://aa.com'}
         return Response(chartData)
     
 
+    # 최신 Melon top 100 순위(순위가 100부터 1 순으로 리턴)
     @action(detail=False, methods=['get'])
     def melon(self, request):
-        melonChartData = {'site':'Melon', 'tracks': [{'track': 'GANADARA (Feat. 아이유)', 'artist': '박재범', 'rank': 1, 'like':86592, 'img_url':'https://cdnimg.melon.co.kr/cm2/album/images/108/89/981/10889981_20220311110820_500.jpg/melon/resize/120/quality/80/optimize'}]}
-        return Response(melonChartData)
+        
+        # 뒤에서 100개의 곡을 가져온다, slicing 후 재정렬이 어려워 역순으로 리턴
+        queryset = self.melon_queryset.order_by('-id')[:100]
+        # queryset = queryset.order_by('id')
+        serialized_melon = MelonSerializer(queryset, many=True)
+        return Response(data=serialized_melon.data)
 
+    # 최신 Bugs top 100 순위 
     @action(detail=False, methods=['get'])
     def bugs(self, request):
-        chartData = {'name':'bugs', 'artist': 'a', 'rank': 1, 'like':1, 'img_url':'https://aa.com'}
-        return Response(chartData)
+        # 뒤에서 100개의 곡을 가져온다, slicing 후 재정렬이 어려워 역순으로 리턴
+        queryset = self.bugs_queryset.order_by('-id')[:100]
+        serialized_genie = BugsSerializer(queryset, many=True)
+        return Response(data=serialized_genie.data)
 
+    # 최신 Genie top 100 순위 
     @action(detail=False, methods=['get'])
     def genie(self, request):
-        chartData = {'name':'genie', 'artist': 'a', 'rank': 1, 'like':1, 'img_url':'https://aa.com'}
-        return Response(chartData)
+        # 뒤에서 100개의 곡을 가져온다, slicing 후 재정렬이 어려워 역순으로 리턴
+        queryset = self.genie_queryset.order_by('-id')[:100]
+        serialized_genie = GenieSerializer(queryset, many=True)
+        return Response(data=serialized_genie.data)
 
 
+# 각 곡에 대한 세부 정보 View
 class TrackView(APIView):
-    queryset = Track.objects.all()
     def get(self, request, pk):
         param = request.GET.get('artist')
-        trackData = {'track':pk, 'artist': param, 'rank': [{'site': 'Melon', 'dayBefore': 2, 'yesterday': 2, 'today': 1}, {'site': 'Bugs', 'dayBefore': 3, 'yesterday': 4, 'today': 4}, {'site': 'Genie', 'dayBefore': 2, 'yesterday': 2, 'today': 3}]}
-        return Response(trackData)
+        current_date = datetime.now()
+        current_time = current_date.strftime("%H")
+        
+        melon_queryset = Melon.objects.filter(song=pk, artist=param, time=current_time)
+        bugs_queryset = Bugs.objects.filter(song=pk, artist=param, time=current_time)
+        genie_queryset = Genie.objects.filter(song=pk, artist=param, time=current_time)
+
+        # 크롤링 시간이 걸려 정각에 바로 갱신되지 않는 경우 갱신 전 데이터를 불러옴
+        if not melon_queryset.exists() and not bugs_queryset.exists() and not genie_queryset.exists():
+            current_date = (datetime.now() - timedelta(hours=1))
+            current_time = current_date.strftime("%H")
+            melon_queryset = Melon.objects.filter(song=pk, artist=param, time=current_time)
+            bugs_queryset = Bugs.objects.filter(song=pk, artist=param, time=current_time)
+            genie_queryset = Genie.objects.filter(song=pk, artist=param, time=current_time)
+
+
+        serialized_melon = MelonSerializer(melon_queryset, many=True)
+        serialized_bugs = MelonSerializer(bugs_queryset, many=True)
+        serialized_genie = MelonSerializer(genie_queryset, many=True)
+
+        m_dayBefore = m_yesterday = m_today = b_dayBefore = b_yesterday = b_today = g_dayBefore = g_yesterday = g_today = None
+
+        for melon_data in serialized_melon.data:
+            date = melon_data['date'].split('T')[0]
+
+            if date == (datetime.now() - timedelta(2)).strftime("%Y-%m-%d"):
+                m_dayBefore = melon_data['rank']
+
+            elif date == (datetime.now() - timedelta(1)).strftime("%Y-%m-%d"):
+                m_yesterday = melon_data['rank']
+
+            elif date == datetime.now().strftime("%Y-%m-%d"):
+                m_today = melon_data['rank']
+
+        for bugs_data in serialized_bugs.data:
+            date = bugs_data['date'].split('T')[0]
+            
+            if date == (datetime.now() - timedelta(2)).strftime("%Y-%m-%d"):
+                b_dayBefore = bugs_data['rank']
+
+            elif date == (datetime.now() - timedelta(1)).strftime("%Y-%m-%d"):
+                b_yesterday = bugs_data['rank']
+
+            elif date == datetime.now().strftime("%Y-%m-%d"):
+                b_today = bugs_data['rank']
+
+        for genie_data in serialized_genie.data:
+            date = genie_data['date'].split('T')[0]
+
+            if date == (datetime.now() - timedelta(2)).strftime("%Y-%m-%d"):
+                g_dayBefore = genie_data['rank']
+
+            elif date == (datetime.now() - timedelta(1)).strftime("%Y-%m-%d"):
+                g_yesterday = genie_data['rank']
+
+            elif date == datetime.now().strftime("%Y-%m-%d"):
+                g_today = genie_data['rank']
+
+
+        trackData = {'track':pk, 'artist':param, 'dateTime': current_date, 'melon': {'site': 'Melon', 'dayBefore': m_dayBefore, 'yesterday': m_yesterday, 'today': m_today},
+            'bugs': {'site': 'Bugs', 'dayBefore': b_dayBefore, 'yesterday': b_yesterday, 'today': b_today},
+            'genie': {'site': 'Genie', 'dayBefore': g_dayBefore, 'yesterday': g_yesterday, 'today': g_today}}
+
+        return Response(data=trackData)

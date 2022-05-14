@@ -1,14 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
-from urllib.request import urlretrieve
-import os
+import pymysql
+from datetime import datetime
+from decouple import config
+from pymysql.converters import escape_string
 
-def createFolder(directory):
-    try:
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-    except OSError:
-        print ('Error: Creating directory. ' +  directory)
 
 def genieCrawling():
     # 1위~50위
@@ -28,13 +24,15 @@ def genieCrawling():
     list_song = []
     list_artist = []
     list_cover = []
+    list_rank = []
 
     for tr in trs:
-        rank = tr.select_one('td.number').text[0:2].strip()
+        rank = int(tr.select_one('td.number').text[0:2].strip())
         title = tr.select_one('td.info > a.title.ellipsis').text.replace("19금\n", "").strip()
         artist = tr.select_one('td.info > a.artist.ellipsis').text
         cover = "https:" + tr.select_one('td > a img')['src']
 
+        list_rank.append(rank)
         list_song.append(title)
         list_artist.append(artist)
         list_cover.append(cover)
@@ -54,26 +52,19 @@ def genieCrawling():
 
 
     for tr in trs:
-        rank = tr.select_one('td.number').text[0:2].strip()
+        rank = int(tr.select_one('td.number').text[0:3].strip())
         title = tr.select_one('td.info > a.title.ellipsis').text.replace("19금\n", "").strip()
         artist = tr.select_one('td.info > a.artist.ellipsis').text
         cover = "https:" + tr.select_one('td > a img')['src']
 
+        list_rank.append(rank)
         list_song.append(title)
-
         list_artist.append(artist)
         list_cover.append(cover)
-    print(list_song)
-    return list_song, list_artist, list_cover, url_list
+    return list_rank, list_song, list_artist, list_cover, url_list
 
-def genieHeart(list_song, list_cover, url_list):
+def genieHeart(url_list):
     headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
-
-    #앨범 커버 저장
-    createFolder('./genie_cover')
-
-    for i in range(100):
-        urlretrieve(list_cover[i], './genie_cover/' +  list_song[i]+ ".png")
 
     list_heart = []
 
@@ -88,11 +79,3 @@ def genieHeart(list_song, list_cover, url_list):
 
     return list_heart
 
-
-song, artist, cover, url = genieCrawling()
-heart = genieHeart(song,  cover, url)
-
-print(song)
-print(artist)
-print(heart)
-print(sum(heart))
