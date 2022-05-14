@@ -7,6 +7,7 @@ from rest_framework.decorators import action
 from .models import Melon, Genie, Bugs
 from .serializer import MelonSerializer, GenieSerializer, BugsSerializer
 from rest_framework.views import APIView
+from datetime import datetime, timedelta
 
 # 통합 차트 및 3개 차트 View
 class ChartView(viewsets.ViewSet):
@@ -54,19 +55,67 @@ class ChartView(viewsets.ViewSet):
 class TrackView(APIView):
     def get(self, request, pk):
         param = request.GET.get('artist')
-        melon_queryset = Melon.objects.filter(song=pk, artist=param)
-        bugs_queryset = Bugs.objects.filter(song=pk, artist=param)
-        genie_queryset = Genie.objects.filter(song=pk, artist=param)
+        current_date = datetime.now()
+        current_time = current_date.strftime("%H")
+        
+        melon_queryset = Melon.objects.filter(song=pk, artist=param, time=current_time)
+        bugs_queryset = Bugs.objects.filter(song=pk, artist=param, time=current_time)
+        genie_queryset = Genie.objects.filter(song=pk, artist=param, time=current_time)
+
+        # 크롤링 시간이 걸려 정각에 바로 갱신되지 않는 경우 갱신 전 데이터를 불러옴
+        if not melon_queryset.exists() and not bugs_queryset.exists() and not genie_queryset.exists():
+            current_date = (datetime.now() - timedelta(hours=1))
+            current_time = current_date.strftime("%H")
+            melon_queryset = Melon.objects.filter(song=pk, artist=param, time=current_time)
+            bugs_queryset = Bugs.objects.filter(song=pk, artist=param, time=current_time)
+            genie_queryset = Genie.objects.filter(song=pk, artist=param, time=current_time)
+
 
         serialized_melon = MelonSerializer(melon_queryset, many=True)
         serialized_bugs = MelonSerializer(bugs_queryset, many=True)
         serialized_genie = MelonSerializer(genie_queryset, many=True)
 
-        if melon_queryset.exists() and bugs_queryset.exists() and genie_queryset.exists():
-            trackData = {'track':pk, 'artist':param, 'rank': [{'site': 'Melon', 'dayBefore': serialized_melon.data[0]['rank'], 'yesterday': serialized_melon.data[1]['rank'], 'today': serialized_melon.data[2]['rank']},
-            {'site': 'Bugs', 'dayBefore': serialized_bugs.data[0]['rank'], 'yesterday': serialized_bugs.data[1]['rank'], 'today': serialized_bugs.data[2]['rank']},
-            {'site': 'Genie', 'dayBefore': serialized_genie.data[0]['rank'], 'yesterday': serialized_genie.data[1]['rank'], 'today': serialized_genie.data[2]['rank']}]}
+        m_dayBefore = m_yesterday = m_today = b_dayBefore = b_yesterday = b_today = g_dayBefore = g_yesterday = g_today = None
 
-            return Response(data=trackData)
-        else:
-            return Response()
+        for melon_data in serialized_melon.data:
+            date = melon_data['date'].split('T')[0]
+
+            if date == (datetime.now() - timedelta(2)).strftime("%Y-%m-%d"):
+                m_dayBefore = melon_data['rank']
+
+            elif date == (datetime.now() - timedelta(1)).strftime("%Y-%m-%d"):
+                m_yesterday = melon_data['rank']
+
+            elif date == datetime.now().strftime("%Y-%m-%d"):
+                m_today = melon_data['rank']
+
+        for bugs_data in serialized_bugs.data:
+            date = bugs_data['date'].split('T')[0]
+            
+            if date == (datetime.now() - timedelta(2)).strftime("%Y-%m-%d"):
+                b_dayBefore = bugs_data['rank']
+
+            elif date == (datetime.now() - timedelta(1)).strftime("%Y-%m-%d"):
+                b_yesterday = bugs_data['rank']
+
+            elif date == datetime.now().strftime("%Y-%m-%d"):
+                b_today = bugs_data['rank']
+
+        for genie_data in serialized_genie.data:
+            date = genie_data['date'].split('T')[0]
+
+            if date == (datetime.now() - timedelta(2)).strftime("%Y-%m-%d"):
+                g_dayBefore = genie_data['rank']
+
+            elif date == (datetime.now() - timedelta(1)).strftime("%Y-%m-%d"):
+                g_yesterday = genie_data['rank']
+
+            elif date == datetime.now().strftime("%Y-%m-%d"):
+                g_today = genie_data['rank']
+
+
+        trackData = {'track':pk, 'artist':param, 'dateTime': current_date, 'melon': {'site': 'Melon', 'dayBefore': m_dayBefore, 'yesterday': m_yesterday, 'today': m_today},
+            'bugs': {'site': 'Bugs', 'dayBefore': b_dayBefore, 'yesterday': b_yesterday, 'today': b_today},
+            'genie': {'site': 'Genie', 'dayBefore': g_dayBefore, 'yesterday': g_yesterday, 'today': g_today}}
+
+        return Response(data=trackData)
