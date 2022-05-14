@@ -8,6 +8,9 @@ from .models import Melon, Genie, Bugs
 from .serializer import MelonSerializer, GenieSerializer, BugsSerializer
 from rest_framework.views import APIView
 from datetime import datetime, timedelta
+import pymysql
+from decouple import config
+from datetime import datetime
 
 # 통합 차트 및 3개 차트 View
 class ChartView(viewsets.ViewSet):
@@ -27,28 +30,36 @@ class ChartView(viewsets.ViewSet):
     # 최신 Melon top 100 순위(순위가 100부터 1 순으로 리턴)
     @action(detail=False, methods=['get'])
     def melon(self, request):
-        
+        query = DB_Queries()
+        melon = query.currentTimeChart("api_melon")
+        return Response(melon)
         # 뒤에서 100개의 곡을 가져온다, slicing 후 재정렬이 어려워 역순으로 리턴
-        queryset = self.melon_queryset.order_by('-id')[:100]
-        # queryset = queryset.order_by('id')
-        serialized_melon = MelonSerializer(queryset, many=True)
-        return Response(data=serialized_melon.data)
+        # queryset = self.melon_queryset.order_by('-id')[:100]
+        # # queryset = queryset.order_by('id')
+        # serialized_melon = MelonSerializer(queryset, many=True)
+        # return Response(data=serialized_melon.data)
 
     # 최신 Bugs top 100 순위 
     @action(detail=False, methods=['get'])
     def bugs(self, request):
-        # 뒤에서 100개의 곡을 가져온다, slicing 후 재정렬이 어려워 역순으로 리턴
-        queryset = self.bugs_queryset.order_by('-id')[:100]
-        serialized_genie = BugsSerializer(queryset, many=True)
-        return Response(data=serialized_genie.data)
+        query = DB_Queries()
+        bugs = query.currentTimeChart("api_bugs")
+        return Response(bugs)
+        # # 뒤에서 100개의 곡을 가져온다, slicing 후 재정렬이 어려워 역순으로 리턴
+        # queryset = self.bugs_queryset.order_by('-id')[:100]
+        # serialized_genie = BugsSerializer(queryset, many=True)
+        # return Response(data=serialized_genie.data)
 
     # 최신 Genie top 100 순위 
     @action(detail=False, methods=['get'])
     def genie(self, request):
-        # 뒤에서 100개의 곡을 가져온다, slicing 후 재정렬이 어려워 역순으로 리턴
-        queryset = self.genie_queryset.order_by('-id')[:100]
-        serialized_genie = GenieSerializer(queryset, many=True)
-        return Response(data=serialized_genie.data)
+        query = DB_Queries()
+        genie = query.currentTimeChart("api_genie")
+        return Response(genie)
+        # # 뒤에서 100개의 곡을 가져온다, slicing 후 재정렬이 어려워 역순으로 리턴
+        # queryset = self.genie_queryset.order_by('-id')[:100]
+        # serialized_genie = GenieSerializer(queryset, many=True)
+        # return Response(data=serialized_genie.data)
 
 
 # 각 곡에 대한 세부 정보 View
@@ -119,3 +130,32 @@ class TrackView(APIView):
             'genie': {'site': 'Genie', 'dayBefore': g_dayBefore, 'yesterday': g_yesterday, 'today': g_today}}
 
         return Response(data=trackData)
+
+class DB_Utils:
+
+    def queryExecutor(self, db, sql, params):
+        conn = pymysql.connect(host=config('DB_HOST'), port=int(config('DB_PORT')), user=config('DB_USER'), password=config('DB_PASSWORD'), db=config('DB_NAME'), charset='utf8')
+
+        try:
+            with conn.cursor(pymysql.cursors.DictCursor) as cursor:     # dictionary based cursor
+                cursor.execute(sql, params)
+                tuples = cursor.fetchall()
+                return tuples
+        except Exception as e:
+            print(e)
+            print(type(e))
+        finally:
+            conn.close()
+
+
+class DB_Queries:
+    # 모든 검색문은 여기에 각각 하나의 메소드로 정의
+
+    def currentTimeChart(self, site):
+        sql = "SELECT * FROM "
+        sql2 = site + " where date='" + str(datetime.now().date()) + "' and time=" + str(datetime.now().hour)
+        sql += sql2
+        util = DB_Utils()
+        params = ()
+        tuples = util.queryExecutor(db=config('DB_NAME'), sql=sql, params=params)
+        return tuples
