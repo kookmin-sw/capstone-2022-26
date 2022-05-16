@@ -1,7 +1,7 @@
 from django import views
 from django.shortcuts import render
 from rest_framework.response import Response
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from .models import Melon, Genie, Bugs
@@ -73,20 +73,34 @@ class TrackView(APIView):
         bugs_queryset = Bugs.objects.filter(b_song=pk, b_artist=param, b_time=current_time)
         genie_queryset = Genie.objects.filter(g_song=pk, g_artist=param, g_time=current_time)
 
+        current_melon_queryset = Melon.objects.filter(m_song=pk, m_artist=param, m_date=current_date, m_time=current_time)
+        current_bugs_queryset = Bugs.objects.filter(b_song=pk, b_artist=param, b_date=current_date, b_time=current_time)
+        current_genie_queryset = Genie.objects.filter(g_song=pk, g_artist=param, g_date=current_date, g_time=current_time)
+
         # 크롤링 시간이 걸려 정각에 바로 갱신되지 않는 경우 갱신 전 데이터를 불러옴
-        if not melon_queryset.exists() and not bugs_queryset.exists() and not genie_queryset.exists():
+        if not current_melon_queryset.exists() and not current_bugs_queryset.exists() and not current_genie_queryset.exists():
             current_date = (datetime.now() - timedelta(hours=1)).strftime("%Y-%m-%d")
             current_time = (datetime.now() - timedelta(hours=1)).strftime("%H")
             melon_queryset = Melon.objects.filter(m_song=pk, m_artist=param, m_time=current_time)
             bugs_queryset = Bugs.objects.filter(b_song=pk, b_artist=param, b_time=current_time)
             genie_queryset = Genie.objects.filter(g_song=pk, g_artist=param, g_time=current_time)
 
+        if not melon_queryset.exists() and not bugs_queryset.exists() and not genie_queryset.exists():
+            return HttpResponseBadRequest()
 
         serialized_melon = MelonSerializer(melon_queryset, many=True)
         serialized_bugs = BugsSerializer(bugs_queryset, many=True)
         serialized_genie = GenieSerializer(genie_queryset, many=True)
 
         m_dayBefore = m_yesterday = m_today = b_dayBefore = b_yesterday = b_today = g_dayBefore = g_yesterday = g_today = None
+
+        if serialized_melon.data:
+            coverImg = serialized_melon.data[0]['m_coverImg']
+        elif serialized_bugs.data:
+            coverImg = serialized_bugs.data[0]['b_coverImg']
+        elif serialized_genie.data:
+            coverImg = serialized_genie.data[0]['g_coverImg']
+
 
         for melon_data in serialized_melon.data:
             date = melon_data['m_date']
@@ -125,7 +139,7 @@ class TrackView(APIView):
                 g_today = genie_data['g_rank']
 
 
-        trackData = {'track':pk, 'artist':param, 'date': current_date, 'melon': {'dayBefore': m_dayBefore, 'yesterday': m_yesterday, 'today': m_today},
+        trackData = {'track':pk, 'artist':param, 'coverImg':coverImg, 'date': current_date, 'time': int(current_time), 'melon': {'dayBefore': m_dayBefore, 'yesterday': m_yesterday, 'today': m_today},
             'bugs': {'dayBefore': b_dayBefore, 'yesterday': b_yesterday, 'today': b_today},
             'genie': {'dayBefore': g_dayBefore, 'yesterday': g_yesterday, 'today': g_today}}
 
