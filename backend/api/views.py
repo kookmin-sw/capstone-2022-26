@@ -198,6 +198,9 @@ class DB_Queries:
                 tuples[rowIDX]['b_weight'] = 0
             if tuples[rowIDX]['m_weight'] == None:
                 tuples[rowIDX]['m_weight'] = 0
-            tuples[rowIDX]['g_weight'] += tuples[rowIDX]['b_weight'] + tuples[rowIDX]['m_weight']
-        tuples = sorted(tuples, key=lambda x: (-x['g_weight']))
+            tuples[rowIDX]['total_weight'] = tuples[rowIDX]['b_weight'] + tuples[rowIDX]['m_weight'] + tuples[rowIDX]['g_weight']
+
+        tuples = sorted(tuples, key=lambda x: (-x['total_weight']))
+        for rowIDX in range(len(tuples)):
+            tuples[rowIDX]['total_rank'] = rowIDX+1
         return tuples
