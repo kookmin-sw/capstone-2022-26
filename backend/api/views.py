@@ -20,10 +20,8 @@ class ChartView(viewsets.ViewSet):
 
     def list(self, request):
         # 가중치를 이용한 통합 순위 계산(미구현) 
-        melon_all = self.melon_queryset.all()
-        bugs_all = self.bugs_queryset.all()
-        genie_all = self.genie_queryset.all()
-        chartData = {'name':'통합', 'artist': 'a', 'rank': 1, 'like':1, 'img_url':'https://aa.com'}
+        query = DB_Queries()
+        chartData = query.totalChart()
         return Response(chartData)
     
 
@@ -172,4 +170,34 @@ class DB_Queries:
         util = DB_Utils()
         params = ()
         tuples = util.queryExecutor(db=config('DB_NAME'), sql=sql, params=params)
+        return tuples
+    def totalChart(self):
+        sql = """(select * from (SELECT * FROM api_bugs order by b_date desc limit 100) b 
+        left outer join (select * from api_genie order by g_date desc limit 100) g 
+        on b.b_song=g.g_song and b.b_artist=g.g_artist 
+        left outer join (select * from api_melon order by m_date desc limit 100) m 
+        on b.b_song=m.m_song and b.b_artist=m.m_artist order by b_date) 
+        union 
+        (select * from (SELECT * FROM api_bugs order by b_date desc limit 100) b 
+        right outer join (select * from api_genie order by g_date desc limit 100) g 
+        on g.g_song=b.b_song and g.g_artist=b.b_artist 
+        left outer join (select * from api_melon order by m_date desc limit 100) m 
+        on g.g_song=m.m_song and g.g_artist=m.m_artist order by b_date)
+         union 
+        (select * from (SELECT * FROM api_bugs order by b_date desc limit 100) b 
+        right outer join  ((select * from api_genie order by g_date desc limit 100) g 
+        right outer join (select * from api_melon order by m_date desc limit 100) m 
+        on m.m_song=g.g_song and g.g_artist=m.m_artist) on m.m_song=b.b_song and m.m_artist=b.b_artist order by b_date)"""
+        util = DB_Utils()
+        params = ()
+        tuples = util.queryExecutor(db=config('DB_NAME'), sql=sql, params=params)
+        for rowIDX in range(len(tuples)):
+            if tuples[rowIDX]['g_weight'] == None:
+                tuples[rowIDX]['g_weight'] = 0
+            if tuples[rowIDX]['b_weight'] == None:
+                tuples[rowIDX]['b_weight'] = 0
+            if tuples[rowIDX]['m_weight'] == None:
+                tuples[rowIDX]['m_weight'] = 0
+            tuples[rowIDX]['g_weight'] += tuples[rowIDX]['b_weight'] + tuples[rowIDX]['m_weight']
+        tuples = sorted(tuples, key=lambda x: (-x['g_weight']))
         return tuples
