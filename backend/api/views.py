@@ -21,8 +21,8 @@ class ChartView(viewsets.ViewSet):
     def list(self, request):
         # 가중치를 이용한 통합 순위 계산(미구현) 
         query = DB_Queries()
-        chartData = query.totalChart()
-        return Response(chartData)
+        totalChartData = query.totalChart()
+        return Response(totalChartData)
     
 
     # 최신 Melon top 100 순위(순위가 100부터 1 순으로 리턴)
@@ -135,7 +135,6 @@ class DB_Utils:
 
     def queryExecutor(self, db, sql, params):
         conn = pymysql.connect(host=config('DB_HOST'), port=int(config('DB_PORT')), user=config('DB_USER'), password=config('DB_PASSWORD'), db=config('DB_NAME'), charset='utf8')
-
         try:
             with conn.cursor(pymysql.cursors.DictCursor) as cursor:     # dictionary based cursor
                 cursor.execute(sql, params)
@@ -150,45 +149,10 @@ class DB_Utils:
 
 class DB_Queries:
     # 모든 검색문은 여기에 각각 하나의 메소드로 정의
-
-    def currentTimeChart(self, site):
-        sql = "SELECT * FROM "
-        sql2 = site + " where date='" + str(datetime.now().date()) + "' and time=" + str(datetime.now().hour)
-        sql += sql2
-        util = DB_Utils()
-        params = ()
-        tuples = util.queryExecutor(db=config('DB_NAME'), sql=sql, params=params)
-        return tuples
     def totalChart(self):
-        sql = """(select * from (SELECT * FROM api_bugs order by b_date desc limit 100) b 
-        left outer join (select * from api_genie order by g_date desc limit 100) g 
-        on b.b_song=g.g_song and b.b_artist=g.g_artist 
-        left outer join (select * from api_melon order by m_date desc limit 100) m 
-        on b.b_song=m.m_song and b.b_artist=m.m_artist order by b_date) 
-        union 
-        (select * from (SELECT * FROM api_bugs order by b_date desc limit 100) b 
-        right outer join (select * from api_genie order by g_date desc limit 100) g 
-        on g.g_song=b.b_song and g.g_artist=b.b_artist 
-        left outer join (select * from api_melon order by m_date desc limit 100) m 
-        on g.g_song=m.m_song and g.g_artist=m.m_artist order by b_date)
-         union 
-        (select * from (SELECT * FROM api_bugs order by b_date desc limit 100) b 
-        right outer join  ((select * from api_genie order by g_date desc limit 100) g 
-        right outer join (select * from api_melon order by m_date desc limit 100) m 
-        on m.m_song=g.g_song and g.g_artist=m.m_artist) on m.m_song=b.b_song and m.m_artist=b.b_artist order by b_date)"""
+        sql = "SELECT * FROM api_total order by date desc limit 100"
         util = DB_Utils()
         params = ()
         tuples = util.queryExecutor(db=config('DB_NAME'), sql=sql, params=params)
-        for rowIDX in range(len(tuples)):
-            if tuples[rowIDX]['g_weight'] == None:
-                tuples[rowIDX]['g_weight'] = 0
-            if tuples[rowIDX]['b_weight'] == None:
-                tuples[rowIDX]['b_weight'] = 0
-            if tuples[rowIDX]['m_weight'] == None:
-                tuples[rowIDX]['m_weight'] = 0
-            tuples[rowIDX]['total_weight'] = tuples[rowIDX]['b_weight'] + tuples[rowIDX]['m_weight'] + tuples[rowIDX]['g_weight']
-
-        tuples = sorted(tuples, key=lambda x: (-x['total_weight']))
-        for rowIDX in range(len(tuples)):
-            tuples[rowIDX]['total_rank'] = rowIDX+1
-        return tuples[:100]
+        tuples = sorted(tuples, key=lambda x: (-x['weight']))
+        return tuples

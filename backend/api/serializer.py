@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Melon, Bugs, Genie
+from .models import Melon, Bugs, Genie, Total
 
 class MelonSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,3 +15,7 @@ class BugsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bugs
         fields = ('b_rank', 'b_song', 'b_artist', 'b_like', 'b_coverImg', 'b_date', 'b_time', 'b_weight')
+class TotalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Total
+        fields = ('total_rank', 'song', 'artist', 'coverImg', 'date', 'time', 'weight')
