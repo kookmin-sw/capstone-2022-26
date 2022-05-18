@@ -1,13 +1,28 @@
 // eslint-disable-next-line import/prefer-default-export
 export const SidebarData = [
   {
-    title: '검사하기',
-    path: '/ToExamine',
+    title: 'Home',
+    path: '/',
     cName: 'nav-text'
   },
   {
-    title: 'Home',
-    path: '/',
+    title: 'Chart',
+    path: '/Chart',
+    cName: 'nav-text'
+  },
+  {
+    title: 'Melon',
+    path: '/Melon',
+    cName: 'nav-text'
+  },
+  {
+    title: 'Genie',
+    path: '/Genie',
+    cName: 'nav-text'
+  },
+  {
+    title: 'Bugs',
+    path: '/Bugs',
     cName: 'nav-text'
   },
   {
@@ -15,9 +30,4 @@ export const SidebarData = [
     path: '/About',
     cName: 'nav-text'
   },
-  {
-    title: 'Contact Us',
-    path: '/Contact',
-    cName: 'nav-text'
-  }
 ];
