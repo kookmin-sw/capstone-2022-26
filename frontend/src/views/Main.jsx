@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import SideBar from '../components/Sidebar';
-import TotalChart from '../containers/TotalChart';
+import Chart from '../containers/Chart';
 
 import styles from '../assets/Main.module.scss';
 
@@ -25,7 +25,7 @@ function Main() {
       { menu === 'Bugs' && <div>Bugs</div> }
       { menu === 'About' && <div>About</div> }
       <hr/>
-      <TotalChart/>
+      <Chart menu={menu}/>
     </div>
   );
 }
