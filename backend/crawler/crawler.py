@@ -44,7 +44,8 @@ class DB_Queries:
         util = DB_Utils()
         params = ()
         util.queryExecutor(db=config('DB_NAME'), sql=sql, params=params, commit=1)
-
+    
+    
     def saveTotalData(self, item):
         # DB에 저장하는 Query문
 

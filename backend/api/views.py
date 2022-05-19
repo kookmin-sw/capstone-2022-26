@@ -31,11 +31,6 @@ class ChartView(viewsets.ViewSet):
         query = DB_Queries()
         melon = query.currentTimeChart("api_melon")
         return Response(melon)
-        # 뒤에서 100개의 곡을 가져온다, slicing 후 재정렬이 어려워 역순으로 리턴
-        # queryset = self.melon_queryset.order_by('-id')[:100]
-        # # queryset = queryset.order_by('id')
-        # serialized_melon = MelonSerializer(queryset, many=True)
-        # return Response(data=serialized_melon.data)
 
     # 최신 Bugs top 100 순위 
     @action(detail=False, methods=['get'])
@@ -43,10 +38,6 @@ class ChartView(viewsets.ViewSet):
         query = DB_Queries()
         bugs = query.currentTimeChart("api_bugs")
         return Response(bugs)
-        # # 뒤에서 100개의 곡을 가져온다, slicing 후 재정렬이 어려워 역순으로 리턴
-        # queryset = self.bugs_queryset.order_by('-id')[:100]
-        # serialized_genie = BugsSerializer(queryset, many=True)
-        # return Response(data=serialized_genie.data)
 
     # 최신 Genie top 100 순위 
     @action(detail=False, methods=['get'])
@@ -54,10 +45,6 @@ class ChartView(viewsets.ViewSet):
         query = DB_Queries()
         genie = query.currentTimeChart("api_genie")
         return Response(genie)
-        # # 뒤에서 100개의 곡을 가져온다, slicing 후 재정렬이 어려워 역순으로 리턴
-        # queryset = self.genie_queryset.order_by('-id')[:100]
-        # serialized_genie = GenieSerializer(queryset, many=True)
-        # return Response(data=serialized_genie.data)
 
 
 # 각 곡에 대한 세부 정보 View
