@@ -28,36 +28,36 @@ class ChartView(viewsets.ViewSet):
     # 최신 Melon top 100 순위(순위가 100부터 1 순으로 리턴)
     @action(detail=False, methods=['get'])
     def melon(self, request):
-        # query = DB_Queries()
-        # melon = query.currentTimeChart("api_melon")
-        # return Response(melon)
+        query = DB_Queries()
+        melon = query.currentTimeChart("api_melon")
+        return Response(melon)
         # 뒤에서 100개의 곡을 가져온다, slicing 후 재정렬이 어려워 역순으로 리턴
-        queryset = self.melon_queryset.order_by('-id')[:100]
-        # queryset = queryset.order_by('id')
-        serialized_melon = MelonSerializer(queryset, many=True)
-        return Response(data=serialized_melon.data)
+        # queryset = self.melon_queryset.order_by('-id')[:100]
+        # # queryset = queryset.order_by('id')
+        # serialized_melon = MelonSerializer(queryset, many=True)
+        # return Response(data=serialized_melon.data)
 
     # 최신 Bugs top 100 순위 
     @action(detail=False, methods=['get'])
     def bugs(self, request):
-        # query = DB_Queries()
-        # bugs = query.currentTimeChart("api_bugs")
-        # return Response(bugs)
-        # 뒤에서 100개의 곡을 가져온다, slicing 후 재정렬이 어려워 역순으로 리턴
-        queryset = self.bugs_queryset.order_by('-id')[:100]
-        serialized_genie = BugsSerializer(queryset, many=True)
-        return Response(data=serialized_genie.data)
+        query = DB_Queries()
+        bugs = query.currentTimeChart("api_bugs")
+        return Response(bugs)
+        # # 뒤에서 100개의 곡을 가져온다, slicing 후 재정렬이 어려워 역순으로 리턴
+        # queryset = self.bugs_queryset.order_by('-id')[:100]
+        # serialized_genie = BugsSerializer(queryset, many=True)
+        # return Response(data=serialized_genie.data)
 
     # 최신 Genie top 100 순위 
     @action(detail=False, methods=['get'])
     def genie(self, request):
-        # query = DB_Queries()
-        # genie = query.currentTimeChart("api_genie")
-        # return Response(genie)
-        # 뒤에서 100개의 곡을 가져온다, slicing 후 재정렬이 어려워 역순으로 리턴
-        queryset = self.genie_queryset.order_by('-id')[:100]
-        serialized_genie = GenieSerializer(queryset, many=True)
-        return Response(data=serialized_genie.data)
+        query = DB_Queries()
+        genie = query.currentTimeChart("api_genie")
+        return Response(genie)
+        # # 뒤에서 100개의 곡을 가져온다, slicing 후 재정렬이 어려워 역순으로 리턴
+        # queryset = self.genie_queryset.order_by('-id')[:100]
+        # serialized_genie = GenieSerializer(queryset, many=True)
+        # return Response(data=serialized_genie.data)
 
 
 # 각 곡에 대한 세부 정보 View
@@ -156,3 +156,44 @@ class DB_Queries:
         tuples = util.queryExecutor(db=config('DB_NAME'), sql=sql, params=params)
         tuples = sorted(tuples, key=lambda x: (-x['weight']))
         return tuples
+    def currentTimeChart(self, site):
+        sql = "SELECT * FROM "
+        sql2 = site + " order by id desc limit 100"
+        sql += sql2
+        util = DB_Utils()
+        params = ()
+        tuples = util.queryExecutor(db=config('DB_NAME'), sql=sql, params=params)
+        chartData = []
+        for rowIDX in range(len(tuples)):
+            tmp = {}
+            if site == "api_bugs":
+                tmp['rank'] = tuples[rowIDX]['b_rank']
+                tmp['song'] = tuples[rowIDX]['b_song']
+                tmp['artist'] = tuples[rowIDX]['b_artist']
+                tmp['like'] = tuples[rowIDX]['b_like']
+                tmp['coverImg'] = tuples[rowIDX]['b_coverImg']
+                tmp['date'] = tuples[rowIDX]['b_date']
+                tmp['time'] = tuples[rowIDX]['b_time']
+                tmp['weight'] = tuples[rowIDX]['b_weight']
+            if site == "api_genie":
+                tmp['rank'] = tuples[rowIDX]['g_rank']
+                tmp['song'] = tuples[rowIDX]['g_song']
+                tmp['artist'] = tuples[rowIDX]['g_artist']
+                tmp['like'] = tuples[rowIDX]['g_like']
+                tmp['coverImg'] = tuples[rowIDX]['g_coverImg']
+                tmp['date'] = tuples[rowIDX]['g_date']
+                tmp['time'] = tuples[rowIDX]['g_time']
+                tmp['weight'] = tuples[rowIDX]['g_weight']
+            if site == "api_melon":
+                tmp['rank'] = tuples[rowIDX]['m_rank']
+                tmp['song'] = tuples[rowIDX]['m_song']
+                tmp['artist'] = tuples[rowIDX]['m_artist']
+                tmp['like'] = tuples[rowIDX]['m_like']
+                tmp['coverImg'] = tuples[rowIDX]['m_coverImg']
+                tmp['date'] = tuples[rowIDX]['m_date']
+                tmp['time'] = tuples[rowIDX]['m_time']
+                tmp['weight'] = tuples[rowIDX]['m_weight']
+            chartData.append(tmp)
+        chartData = sorted(chartData, key=lambda x: (-x['weight']))
+        return chartData
+
