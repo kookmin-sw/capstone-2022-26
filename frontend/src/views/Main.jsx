@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import SideBar from '../components/Sidebar';
-import Chart from '../containers/Chart';
+import HomePage from '../components/pages/HomePage';
+import ChartPage from '../components/pages/ChartPage';
+import MelonPage from '../components/pages/MelonPage';
+import GeniePage from '../components/pages/GeniePage';
+import BugsPage from '../components/pages/BugsPage';
+// import AboutPage from '../components/pages/AboutPage';
 
 import styles from '../assets/Main.module.scss';
 
@@ -17,15 +22,12 @@ function Main() {
         menu={menu}
         getSelectedMenu={getSelectedMenu}
       />
-      <h1>{menu}</h1>
-      { menu === 'Home' && <div>Home</div> }
-      { menu === 'Chart' && <div>Chart</div> }
-      { menu === 'Melon' && <div>Melon</div> }
-      { menu === 'Genie' && <div>Genie</div> }
-      { menu === 'Bugs' && <div>Bugs</div> }
-      { menu === 'About' && <div>About</div> }
-      <hr/>
-      <Chart menu={menu}/>
+      { menu === 'Home' && <HomePage /> }
+      { menu === 'Chart' && <ChartPage /> }
+      { menu === 'Melon' && <MelonPage /> }
+      { menu === 'Genie' && <GeniePage /> }
+      { menu === 'Bugs' && <BugsPage /> }
+      {/* { menu === 'About' && <AboutPage /> } */}
     </div>
   );
 }

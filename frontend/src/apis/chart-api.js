@@ -1,9 +1,12 @@
+import axios from 'axios';
+
+const BASE_URL = `http://ec2-54-180-109-17.ap-northeast-2.compute.amazonaws.com`;
 
 // eslint-disable-next-line import/prefer-default-export
 export async function getTotalSongs() {
   const songs = [
     {
-      total_rank: 1,
+      rank: 1,
       song: 'That That',
       artist: 'PSY',
       coverImg: 'coverImg',
@@ -12,7 +15,7 @@ export async function getTotalSongs() {
       weight: 99.97
     },
     {
-      total_rank: 2,
+      rank: 2,
       song: 'LOVE DIVE',
       artist: 'IVE',
       coverImg: 'coverImg',
@@ -21,7 +24,7 @@ export async function getTotalSongs() {
       weight: 98.79
     },
     {
-      total_rank: 3,
+      rank: 3,
       song: 'TOMBOY',
       artist: 'IDLE',
       coverImg: 'coverImg',
@@ -30,7 +33,7 @@ export async function getTotalSongs() {
       weight: 98.13
     },
     {
-      total_rank: 4,
+      rank: 4,
       song: 'Still Life',
       artist: 'BIGBANG',
       coverImg: 'coverImg',
@@ -46,7 +49,7 @@ export async function getTotalSongs() {
 export async function getMelonSongs() {
   const songs = [
     {
-      total_rank: 1,
+      rank: 1,
       song: 'That That',
       artist: 'PSY',
       coverImg: 'coverImg',
@@ -55,7 +58,7 @@ export async function getMelonSongs() {
       weight: 99.97
     },
     {
-      total_rank: 2,
+      rank: 2,
       song: 'LOVE DIVE',
       artist: 'IVE',
       coverImg: 'coverImg',
@@ -69,7 +72,14 @@ export async function getMelonSongs() {
 }
 
 export async function getGenieSongs() {
-  return [];
+  let songs;
+  await axios.get(`${BASE_URL}/chart`)
+    .then((res) => {
+      console.log(res)
+
+      songs = res;
+    })
+  return songs;
 }
 
 export async function getBugsSongs() {

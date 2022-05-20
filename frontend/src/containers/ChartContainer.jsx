@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { getTotalSongs, getMelonSongs, getGenieSongs, getBugsSongs } from '../apis/chart-api';
 
+import "../assets/ChartContainer.css";
+
 function SongLable({ song }) {
   SongLable.propTypes = {
     song: PropTypes.node.isRequired,
   };
   return (
-    <div>
-      <div>{song.total_rank}</div>
+    <div className="chart">
+      <div>{song.rank}</div>
       <div>{song.song}</div>
       <div>{song.artist}</div>
       <div>{song.weight}</div>
@@ -23,21 +25,19 @@ function Chart(menu) {
 
   const getData = async () => {
     let result;
-    switch(menu) {
+    // eslint-disable-next-line react/destructuring-assignment
+    switch(menu.menu) {
       case 'Home':
       case 'Chart':
         result = await getTotalSongs();
         break;
       case 'Melon':
-        console.log('melon');
         result = await getMelonSongs();
         break;
       case 'Genie':
-        console.log('melon');
         result = await getGenieSongs();
         break;
       case 'Bugs':
-        console.log('melon');
         result = await getBugsSongs();
         break;
       default:
@@ -58,7 +58,7 @@ function Chart(menu) {
 
   return (
     <>
-      {songLabels.map((song) => <SongLable key={song.total_rank} song={song} />)}
+      {songLabels.map((song) => <SongLable key={song.rank} song={song} />)}
     </>
   );
 }
