@@ -1,77 +1,84 @@
-[![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-f059dc9a6f8d3a56e377f745f24479a46679e63a5d9fe6f495e02850cd0d8118.svg)](https://classroom.github.com/online_ide?assignment_repo_id=7028196&assignment_repo_type=AssignmentRepo)
-# Welcome to GitHub
+# 멜벅지
+  
+  팀페이지 주소 : https://kookmin-sw.github.io/capstone-2022-26/
+  
+  
+## 1. 프로젝트 소개 
+#### 음원 랭킹 통합 서비스
+&nbsp;
 
-캡스톤 팀 생성을 축하합니다.
+국내에는 다양한 음원 사이트들이 존재하지만 그 중 몇몇 사이트는 특정 음악 분야나 아티스트에 편향되어 있는 순위를 가지고 있다.
 
-## 팀소개 및 페이지를 꾸며주세요.
+본 프로젝트의 목표는 대표적인 음원사이트인 멜론, 벅스, 지니의 데이터를 분석, 편향성을 줄여 독자적인 통합 음원 순위를 만드는 것이다.
 
-- 프로젝트 소개
-  - 프로젝트 설치방법 및 데모, 사용방법, 프리뷰등을 readme.md에 작성.
-  - Api나 사용방법등 내용이 많을경우 wiki에 꾸미고 링크 추가.
-
-- 팀페이지 꾸미기
-  - 프로젝트 소개 및 팀원 소개
-  - index.md 예시보고 수정.
-
-- GitHub Pages 리파지토리 Settings > Options > GitHub Pages 
-  - Source를 marster branch
-  - Theme Chooser에서 태마선택
-  - 수정후 팀페이지 확인하여 점검.
-
-**팀페이지 주소** -> https://kookmin-sw.github.io/ '{{자신의 리파지토리 아이디}}'
-
-**예시)** 2020년 0조  https://kookmin-sw.github.io/capstone-2020-0/
+  
 
 
-## 내용에 아래와 같은 내용들을 추가하세요.
+## 2. Abstract
+There are various music streaming services but some of them show ranking charts that are biased towards a particular music field or artist.
 
-### 1. 프로잭트 소개
+This project is to make independent integrated music ranking chart with reduced bias by analyzing the data of three typical music streaming services of Korea which are Melon, Bugs and Genie.
+   
+  
 
-프로젝트
-
-### 2. 소개 영상
-
-프로젝트 소개하는 영상을 추가하세요
-
-### 3. 팀 소개
-
-팀을 소개하세요.
-
-팀원정보 및 담당이나 사진 및 SNS를 이용하여 소개하세요.
-
-### 4. 사용법
-
-소스코드제출시 설치법이나 사용법을 작성하세요.
-
-### 5. 기타
-
-추가적인 내용은 자유롭게 작성하세요.
+## 3. 소개 영상
+  
+  - 수행 계획  영상 
+  
+  
 
 
-## Markdown을 사용하여 내용꾸미기
+## 4. 팀 소개
 
-Markdown은 작문을 스타일링하기위한 가볍고 사용하기 쉬운 구문입니다. 여기에는 다음을위한 규칙이 포함됩니다.
 
-```markdown
-Syntax highlighted code block
+### 팀원
 
-# Header 1
-## Header 2
-### Header 3
 
-- Bulleted
-- List
+- 박태범
 
-1. Numbered
-2. List
+ 
+ ```
+ * 학번: ****1626
+ * 역할: Backend Data analysis
+ * E-mail: ppttbb9461@kookmin.ac.kr
+ ```
+ 
+ 
+- 서범석
 
-**Bold** and _Italic_ and `Code` text
+ ```
+ * 학번: ****1628
+ * 역할: Frontend Engineer
+ * E-mail: sbs9805@kookmin.ac.kr
+ ```
 
-[Link](url) and ![Image](src)
-```
+- 서필립
 
-자세한 내용은 [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+ 
+ ```
+ * 학번: ****1631
+ * 역할: Backend Data analysis, Design
+ * E-mail: seophillip10@gmail.com
+ ```
 
-### Support or Contact
+ - 이인호
+ 
+ 
+ ```
+ * 학번: ****1675
+ * 역할: Backend Engineer
+ * E-mail: inhoking@kookmin.ac.kr
+ ```
+ 
+## 5. 사용법
 
-readme 파일 생성에 추가적인 도움이 필요하면 [도움말](https://help.github.com/articles/about-readmes/) 이나 [contact support](https://github.com/contact) 을 이용하세요.
+  - 사용법 추가
+
+## 6. 최종 시연 영상
+
+  - 최종 시연 영상 
+  
+ 
+  
+
+
