@@ -46,6 +46,12 @@ class ChartView(viewsets.ViewSet):
         genie = query.currentTimeChart("api_genie")
         return Response(genie)
 
+    @action(detail=False, methods=['get'])
+    def dashboard(self, request):
+        query = DB_Queries()
+        dashboard = query.dashboard()
+        return Response(dashboard)
+
 
 # 각 곡에 대한 세부 정보 View
 class TrackView(APIView):
@@ -140,7 +146,7 @@ class DB_Utils:
 class DB_Queries:
     # 모든 검색문은 여기에 각각 하나의 메소드로 정의
     def totalChart(self):
-        sql = "SELECT rank, song, artist, coverImg, date, time, weight FROM api_total order by date desc limit 100"
+        sql = "SELECT * FROM api_total order by date desc limit 100"
         util = DB_Utils()
         params = ()
         tuples = util.queryExecutor(db=config('DB_NAME'), sql=sql, params=params)
@@ -186,4 +192,29 @@ class DB_Queries:
             chartData.append(tmp)
         chartData = sorted(chartData, key=lambda x: (-x['weight']))
         return chartData
+
+    def dashboard(self):
+        tuples = self.totalChart()
+        dashboard = []
+        for rowIDX in range(10):
+            tmp = {}
+            tmp['rank'] = tuples[rowIDX]['rank']
+            tmp['song'] = tuples[rowIDX]['song']
+            tmp['artist'] = tuples[rowIDX]['artist']
+            sql = "select weight, date, time from api_total where song=%s"
+            params = (tmp['song'])
+            util = DB_Utils()
+            weights = util.queryExecutor(db=config('DB_NAME'), sql=sql, params=params)
+            date_list = []
+            time_list = []
+            weights_list = []
+            for idx in range(len(weights)):
+                date_list.append(weights[idx]['date'])
+                time_list.append(weights[idx]['time'])
+                weights_list.append(weights[idx]['weight'])
+            tmp['date'] = date_list
+            tmp['time'] = time_list
+            tmp['weight'] = weights_list
+            dashboard.append(tmp)
+        return dashboard
 
