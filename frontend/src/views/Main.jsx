@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-// import RankBoard from '../containers/RankBoard';
 import SideBar from '../components/Sidebar';
+import Chart from '../containers/Chart';
 
 import styles from '../assets/Main.module.scss';
 
@@ -24,6 +24,8 @@ function Main() {
       { menu === 'Genie' && <div>Genie</div> }
       { menu === 'Bugs' && <div>Bugs</div> }
       { menu === 'About' && <div>About</div> }
+      <hr/>
+      <Chart menu={menu}/>
     </div>
   );
 }

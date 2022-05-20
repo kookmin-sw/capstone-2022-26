@@ -33,7 +33,7 @@ function Sidebar({ menu, getSelectedMenu }) {
             </Link>
           </li>
           {SidebarData.map((item) => (
-            <li key={item.id} className={styles[item.cName]}>
+            <li key={item.title} className={styles[item.cName]}>
               <button className={styles['menu-button']} type='button' onClick={() => sendSelectedMenu(item.title)}>
                 <span>{item.title}</span>
               </button>
