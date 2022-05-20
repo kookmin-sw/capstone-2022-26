@@ -33,7 +33,7 @@ class Genie(models.Model):
     g_weight = models.FloatField(default=0)
 
 class Total(models.Model):
-    total_rank = models.IntegerField()
+    rank = models.IntegerField()
     song = models.CharField(max_length=50)
     artist = models.CharField(max_length=50)
     coverImg = models.URLField()

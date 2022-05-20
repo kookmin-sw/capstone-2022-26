@@ -66,7 +66,7 @@ CORS_ALLOW_CREDENTIALS = False
 CORS_ORIGIN_WHITELIST = [
     # React port
    'http://localhost:3000',
-   '127.0.0.1:3000'
+   'http://127.0.0.1:3000'
 ]
 
 ROOT_URLCONF = 'config.urls'
