@@ -140,7 +140,7 @@ class DB_Utils:
 class DB_Queries:
     # 모든 검색문은 여기에 각각 하나의 메소드로 정의
     def totalChart(self):
-        sql = "SELECT total_rank, song, artist, coverImg, date, time, weight FROM api_total order by date desc limit 100"
+        sql = "SELECT rank, song, artist, coverImg, date, time, weight FROM api_total order by date desc limit 100"
         util = DB_Utils()
         params = ()
         tuples = util.queryExecutor(db=config('DB_NAME'), sql=sql, params=params)
