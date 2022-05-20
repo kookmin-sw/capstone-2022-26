@@ -26,7 +26,7 @@ function Sidebar({ menu, getSelectedMenu }) {
       </div>
       <nav className={sidebar ? styles['nav-menu active'] : styles['nav-menu']} style={{width: '200px'}}>
         <ul className={styles['nav-menu-items']} onClick={showSidebar} role='presentation'
-          style={{height: '100vh', backgroundColor: '#060b26', float: 'left', marginTop: '0px', padding: '0px'}}>
+          style={{height: '100vh', backgroundColor: '#808080', float: 'left', marginTop: '0px', padding: '0px'}}>
           <li className={styles['navbar-toggle']}>
             <Link to='#!' className={styles['menu-bars']}>
               <AiIcons.AiOutlineClose />

@@ -25,9 +25,9 @@ export const SidebarData = [
     path: '/Bugs',
     cName: 'nav-text'
   },
-  {
-    title: 'About',
-    path: '/About',
-    cName: 'nav-text'
-  },
+  // {
+  //   title: 'About',
+  //   path: '/About',
+  //   cName: 'nav-text'
+  // },
 ];
