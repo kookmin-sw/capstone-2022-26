@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from django.http import HttpResponse, HttpResponseBadRequest
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from .models import Melon, Genie, Bugs, Total
-from .serializer import MelonSerializer, GenieSerializer, BugsSerializer, TotalSerializer
+from .models import Melon, Genie, Bugs
+from .serializer import MelonSerializer, GenieSerializer, BugsSerializer
 from rest_framework.views import APIView
 from datetime import datetime, timedelta
 import pymysql
@@ -60,7 +60,6 @@ class TrackView(APIView):
         current_date = datetime.now()
         current_time = datetime.now().strftime("%H")
         
-        total_queryset = Total.objects.filter(song=pk, artist=param, time=current_time)
         melon_queryset = Melon.objects.filter(m_song=pk, m_artist=param, m_time=current_time)
         bugs_queryset = Bugs.objects.filter(b_song=pk, b_artist=param, b_time=current_time)
         genie_queryset = Genie.objects.filter(g_song=pk, g_artist=param, g_time=current_time)
@@ -69,7 +68,6 @@ class TrackView(APIView):
         if not melon_queryset.exists() and not bugs_queryset.exists() and not genie_queryset.exists():
             return HttpResponseBadRequest()
 
-        serialized_total = TotalSerializer(total_queryset, many=True)
         serialized_melon = MelonSerializer(melon_queryset, many=True)
         serialized_bugs = BugsSerializer(bugs_queryset, many=True)
         serialized_genie = GenieSerializer(genie_queryset, many=True)
@@ -212,9 +210,9 @@ class DB_Queries:
                 date_list.append(weights[idx]['date'])
                 time_list.append(weights[idx]['time'])
                 weights_list.append(weights[idx]['weight'])
-            tmp['date'] = date_list
-            tmp['time'] = time_list
-            tmp['weight'] = weights_list
+            tmp['date'] = date_list[len(date_list)-48:]
+            tmp['time'] = time_list[len(time_list)-48:]
+            tmp['weight'] = weights_list[len(weights_list)-48:]
             dashboard.append(tmp)
         return dashboard
 
