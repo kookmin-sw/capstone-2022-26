@@ -18,4 +18,4 @@ class BugsSerializer(serializers.ModelSerializer):
 class TotalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Total
-        fields = ('total_rank', 'song', 'artist', 'coverImg', 'date', 'time', 'weight')
+        fields = ('rank', 'song', 'artist', 'coverImg', 'date', 'time', 'weight')
