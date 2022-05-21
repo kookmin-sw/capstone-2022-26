@@ -210,9 +210,9 @@ class DB_Queries:
                 date_list.append(weights[idx]['date'])
                 time_list.append(weights[idx]['time'])
                 weights_list.append(weights[idx]['weight'])
-            tmp['date'] = date_list[len(date_list)-48:]
-            tmp['time'] = time_list[len(time_list)-48:]
-            tmp['weight'] = weights_list[len(weights_list)-48:]
+            tmp['date'] = date_list[len(date_list)-49:]
+            tmp['time'] = time_list[len(time_list)-49:]
+            tmp['weight'] = weights_list[len(weights_list)-49:]
             dashboard.append(tmp)
         return dashboard
 
