@@ -1,4 +1,37 @@
 .chart {
-  width: 90vw;
+  width: 70vw;
   margin: 0 auto;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border: 1px solid #EFEFEF;
+  border-radius: 1em;
+}
+
+.rank {
+  width: 13vw;
+  height: 13vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2em;
+}
+
+.albumImg {
+  width: 10vw;
+  height: 10vw;
+}
+
+.song {
+  width: 20vw;
+  padding-left: 2em;
+}
+
+.artist {
+  width: 10vw;
+  padding-left: 2em;
+}
+
+.weight {
+  padding-left: 2em;
 }
