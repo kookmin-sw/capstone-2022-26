@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import * as FaIcons from 'react-icons/fa';
-import * as AiIcons from 'react-icons/ai';
+// import * as AiIcons from 'react-icons/ai';
 
 import { SidebarData } from './SidebarData';
 import styles from '../assets/Sidebar.module.scss';
@@ -26,10 +26,10 @@ function Sidebar({ menu, getSelectedMenu }) {
       </div>
       <nav className={sidebar ? styles['nav-menu active'] : styles['nav-menu']} style={{width: '200px'}}>
         <ul className={styles['nav-menu-items']} onClick={showSidebar} role='presentation'
-          style={{height: '100vh', backgroundColor: '#808080', float: 'left', marginTop: '0px', padding: '0px'}}>
+          style={{height: '100vh', backgroundColor: '#7265FF', float: 'left', marginTop: '0px', padding: '0px'}}>
           <li className={styles['navbar-toggle']}>
             <Link to='#!' className={styles['menu-bars']}>
-              <AiIcons.AiOutlineClose />
+              {/* <AiIcons.AiOutlineClose /> */}
             </Link>
           </li>
           {SidebarData.map((item) => (

@@ -22,12 +22,14 @@ function Main() {
         menu={menu}
         getSelectedMenu={getSelectedMenu}
       />
-      { menu === 'Home' && <HomePage /> }
-      { menu === 'Chart' && <ChartPage /> }
-      { menu === 'Melon' && <MelonPage /> }
-      { menu === 'Genie' && <GeniePage /> }
-      { menu === 'Bugs' && <BugsPage /> }
+      <div className={styles.menuPages}>
+        { menu === 'Home' && <HomePage /> }
+        { menu === 'Chart' && <ChartPage /> }
+        { menu === 'Melon' && <MelonPage /> }
+        { menu === 'Genie' && <GeniePage /> }
+        { menu === 'Bugs' && <BugsPage /> }
       {/* { menu === 'About' && <AboutPage /> } */}
+      </div>
     </div>
   );
 }

@@ -10,16 +10,16 @@ function SongLable({ song }) {
   };
   return (
     <div className="chart">
-      <div>{song.rank}</div>
-      <div>{song.song}</div>
-      <div>{song.artist}</div>
-      <div>{song.weight}</div>
-      <hr/>
+      <div className="rank">{song.rank}</div>
+      <img className="albumImg" src={song.coverImg} alt={song.rank}/>
+      <div className="song">{song.song}</div>
+      <div className="artist">{song.artist}</div>
+      <div className="weight">{(song.weight).toFixed(2)}</div>
     </div>
   );
 }
 
-function Chart(menu) {
+function ChartContainer(menu) {
   const [songLabels, setSongLabels] = useState([]);
   const [isLoading, setisLoading] = useState(true);
 
@@ -47,20 +47,21 @@ function Chart(menu) {
   }
 
   useEffect(() => {
-    const chartData = getData()
+    const chartData = getData();
     chartData.then(data => {
       setSongLabels(data);
     }); 
     setisLoading(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isLoading) return <div>loading...</div>
 
   return (
-    <>
+    <div style={{marginTop: '15vh'}}>
       {songLabels.map((song) => <SongLable key={song.rank} song={song} />)}
-    </>
+    </div>
   );
 }
 
-export default Chart;
+export default ChartContainer;

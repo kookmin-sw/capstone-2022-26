@@ -1,87 +1,40 @@
 import axios from 'axios';
 
-const BASE_URL = `http://ec2-54-180-109-17.ap-northeast-2.compute.amazonaws.com`;
+const BASE_URL = `http://ec2-13-125-170-254.ap-northeast-2.compute.amazonaws.com/`;
 
 // eslint-disable-next-line import/prefer-default-export
 export async function getTotalSongs() {
-  const songs = [
-    {
-      rank: 1,
-      song: 'That That',
-      artist: 'PSY',
-      coverImg: 'coverImg',
-      date: '2022-05-17',
-      time: 18,
-      weight: 99.97
-    },
-    {
-      rank: 2,
-      song: 'LOVE DIVE',
-      artist: 'IVE',
-      coverImg: 'coverImg',
-      date: '2022-05-17',
-      time: 18,
-      weight: 98.79
-    },
-    {
-      rank: 3,
-      song: 'TOMBOY',
-      artist: 'IDLE',
-      coverImg: 'coverImg',
-      date: '2022-05-17',
-      time: 18,
-      weight: 98.13
-    },
-    {
-      rank: 4,
-      song: 'Still Life',
-      artist: 'BIGBANG',
-      coverImg: 'coverImg',
-      date: '2022-05-17',
-      time: 18,
-      weight: 96.88
-    },
-  ];
-
+  let songs;
+  await axios.get(`${BASE_URL}/chart`)
+    .then((res) => {
+      songs = res.data;
+    })
   return songs;
 }
 
 export async function getMelonSongs() {
-  const songs = [
-    {
-      rank: 1,
-      song: 'That That',
-      artist: 'PSY',
-      coverImg: 'coverImg',
-      date: '2022-05-17',
-      time: 18,
-      weight: 99.97
-    },
-    {
-      rank: 2,
-      song: 'LOVE DIVE',
-      artist: 'IVE',
-      coverImg: 'coverImg',
-      date: '2022-05-17',
-      time: 18,
-      weight: 98.79
-    }
-  ];
-
+  let songs;
+  await axios.get(`${BASE_URL}/chart/melon`)
+    .then((res) => {
+      songs = res.data;
+    })
   return songs;
 }
 
 export async function getGenieSongs() {
   let songs;
-  await axios.get(`${BASE_URL}/chart`)
+  await axios.get(`${BASE_URL}/chart/genie`)
     .then((res) => {
-      console.log(res)
-
-      songs = res;
+      songs = res.data;
     })
   return songs;
 }
 
 export async function getBugsSongs() {
-  return [];
+  let songs;
+  await axios.get(`${BASE_URL}/chart/bugs`)
+    .then((res) => {
+      songs = res.data;
+    })
+  return songs;
 }
