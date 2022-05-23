@@ -71,7 +71,11 @@ class DB_Queries:
         union 
         (select * from (SELECT * FROM api_bugs order by b_date desc limit 100) b 
         right outer join (select * from api_genie order by g_date desc limit 100) g 
+<<<<<<< HEAD
         on g.g_song=b.b_song 
+=======
+        on g.g_song=b.b_song  
+>>>>>>> 542178391417a2dc0944e8dd2591722cb72b6fbc
         left outer join (select * from api_melon order by m_date desc limit 100) m 
         on g.g_song=m.m_song order by b_date)
          union 
