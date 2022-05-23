@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Melon, Bugs, Genie, Total
+from .models import Melon, Bugs, Genie, Total, Youtube
 
 class MelonSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,3 +19,8 @@ class TotalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Total
         fields = ('rank', 'song', 'artist', 'coverImg', 'date', 'time', 'weight')
+
+class YoutubeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Youtube
+        fields = ('song', 'link')
