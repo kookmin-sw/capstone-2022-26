@@ -1,5 +1,6 @@
 from django import views
 from django.shortcuts import render
+from numpy import char
 from rest_framework.response import Response
 from django.http import HttpResponse, HttpResponseBadRequest
 from rest_framework import viewsets
@@ -201,6 +202,16 @@ class DB_Queries:
                 tmp['weight'] = tuples[rowIDX]['m_weight']
             chartData.append(tmp)
         chartData = sorted(chartData, key=lambda x: (-x['weight']))
+
+        for rowIDX in range(len(chartData)):
+            try:
+                sql2 = "SELECT link FROM api_youtube where song=%s"
+                params = (chartData[rowIDX]['song'])
+                util = DB_Utils()
+                youtube = util.queryExecutor(db=config('DB_NAME'), sql=sql2, params=params)
+                chartData[rowIDX]['link'] = youtube[0]['link']
+            except:
+                continue
         return chartData
 
     def dashboard(self):
