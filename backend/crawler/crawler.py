@@ -65,20 +65,20 @@ class DB_Queries:
     def totalChart(self):
         sql = """(select * from (SELECT * FROM api_bugs order by b_date desc limit 100) b 
         left outer join (select * from api_genie order by g_date desc limit 100) g 
-        on b.b_song=g.g_song and b.b_artist=g.g_artist 
+        on b.b_song=g.g_song 
         left outer join (select * from api_melon order by m_date desc limit 100) m 
-        on b.b_song=m.m_song and b.b_artist=m.m_artist order by b_date) 
+        on b.b_song=m.m_song order by b_date) 
         union 
         (select * from (SELECT * FROM api_bugs order by b_date desc limit 100) b 
         right outer join (select * from api_genie order by g_date desc limit 100) g 
-        on g.g_song=b.b_song and g.g_artist=b.b_artist 
+        on g.g_song=b.b_song  
         left outer join (select * from api_melon order by m_date desc limit 100) m 
-        on g.g_song=m.m_song and g.g_artist=m.m_artist order by b_date)
+        on g.g_song=m.m_song order by b_date)
          union 
         (select * from (SELECT * FROM api_bugs order by b_date desc limit 100) b 
         right outer join  ((select * from api_genie order by g_date desc limit 100) g 
         right outer join (select * from api_melon order by m_date desc limit 100) m 
-        on m.m_song=g.g_song and g.g_artist=m.m_artist) on m.m_song=b.b_song and m.m_artist=b.b_artist order by b_date)"""
+        on m.m_song=g.g_song) on m.m_song=b.b_song order by b_date)"""
         util = DB_Utils()
         params = ()
         tuples = util.queryExecutor(db=config('DB_NAME'), sql=sql, params=params, commit=0)

@@ -40,3 +40,8 @@ class Total(models.Model):
     date = models.DateTimeField()
     time = models.IntegerField()
     weight = models.FloatField(default=0)
+
+class Youtube(models.Model):
+
+    song = models.CharField(max_length=50)
+    link = models.CharField(max_length=3000)

@@ -53,6 +53,7 @@ class ChartView(viewsets.ViewSet):
         return Response(dashboard)
 
 
+
 # 각 곡에 대한 세부 정보 View
 class TrackView(APIView):
     def get(self, request, pk):
@@ -149,7 +150,18 @@ class DB_Queries:
         params = ()
         tuples = util.queryExecutor(db=config('DB_NAME'), sql=sql, params=params)
         tuples = sorted(tuples, key=lambda x: (-x['weight']))
+
+        for rowIDX in range(len(tuples)):
+            try:
+                sql2 = "SELECT link FROM api_youtube where song=%s"
+                params = (tuples[rowIDX]['song'])
+                util = DB_Utils()
+                youtube = util.queryExecutor(db=config('DB_NAME'), sql=sql2, params=params)
+                tuples[rowIDX]['link'] = youtube[0]['link']
+            except:
+                continue
         return tuples
+
     def currentTimeChart(self, site):
         sql = "SELECT * FROM "
         sql2 = site + " order by id desc limit 100"
