@@ -20,15 +20,8 @@ There are various music streaming services but some of them show ranking charts 
 This project is to make independent integrated music ranking chart with reduced bias by analyzing the data of three typical music streaming services of Korea which are Melon, Bugs and Genie.
    
   
-
-## 3. 소개 영상
   
-  - 수행 계획  영상 
-  
-  
-
-
-## 4. 팀 소개
+## 3. 팀 소개
 
 
 ### 팀원
@@ -70,11 +63,11 @@ This project is to make independent integrated music ranking chart with reduced 
  * E-mail: inhoking@kookmin.ac.kr
  ```
  
-## 5. 사용법
+## 4. 사용법
 
   - 사용법 추가
 
-## 6. 최종 시연 영상
+## 5. 최종 시연 영상
 
   - 최종 시연 영상 
   https://youtu.be/XNc89nw2FLo
