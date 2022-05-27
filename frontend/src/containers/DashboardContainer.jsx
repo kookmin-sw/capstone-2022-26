@@ -37,7 +37,7 @@ function DashboardContainer() {
            ${today.getDate()}일
            ${upTime}시 업데이트`);
       } else {
-        setUpdateTime(`${upTime}시 데이터 업데이트 중...`)
+        setUpdateTime(`${today.getHours()}시 데이터 업데이트 중...`)
       }
     });
     setisLoading(false);

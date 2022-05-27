@@ -1,5 +1,6 @@
 from django import views
 from django.shortcuts import render
+from numpy import char
 from rest_framework.response import Response
 from django.http import HttpResponse, HttpResponseBadRequest
 from rest_framework import viewsets
@@ -21,43 +22,37 @@ class ChartView(viewsets.ViewSet):
     def list(self, request):
         # 가중치를 이용한 통합 순위 계산(미구현) 
         query = DB_Queries()
-        chartData = query.totalChart()
-        return Response(chartData)
+        totalChartData = query.totalChart()
+        return Response(totalChartData)
     
 
     # 최신 Melon top 100 순위(순위가 100부터 1 순으로 리턴)
     @action(detail=False, methods=['get'])
     def melon(self, request):
-        # query = DB_Queries()
-        # melon = query.currentTimeChart("api_melon")
-        # return Response(melon)
-        # 뒤에서 100개의 곡을 가져온다, slicing 후 재정렬이 어려워 역순으로 리턴
-        queryset = self.melon_queryset.order_by('-id')[:100]
-        # queryset = queryset.order_by('id')
-        serialized_melon = MelonSerializer(queryset, many=True)
-        return Response(data=serialized_melon.data)
+        query = DB_Queries()
+        melon = query.currentTimeChart("api_melon")
+        return Response(melon)
 
     # 최신 Bugs top 100 순위 
     @action(detail=False, methods=['get'])
     def bugs(self, request):
-        # query = DB_Queries()
-        # bugs = query.currentTimeChart("api_bugs")
-        # return Response(bugs)
-        # 뒤에서 100개의 곡을 가져온다, slicing 후 재정렬이 어려워 역순으로 리턴
-        queryset = self.bugs_queryset.order_by('-id')[:100]
-        serialized_genie = BugsSerializer(queryset, many=True)
-        return Response(data=serialized_genie.data)
+        query = DB_Queries()
+        bugs = query.currentTimeChart("api_bugs")
+        return Response(bugs)
 
     # 최신 Genie top 100 순위 
     @action(detail=False, methods=['get'])
     def genie(self, request):
-        # query = DB_Queries()
-        # genie = query.currentTimeChart("api_genie")
-        # return Response(genie)
-        # 뒤에서 100개의 곡을 가져온다, slicing 후 재정렬이 어려워 역순으로 리턴
-        queryset = self.genie_queryset.order_by('-id')[:100]
-        serialized_genie = GenieSerializer(queryset, many=True)
-        return Response(data=serialized_genie.data)
+        query = DB_Queries()
+        genie = query.currentTimeChart("api_genie")
+        return Response(genie)
+
+    @action(detail=False, methods=['get'])
+    def dashboard(self, request):
+        query = DB_Queries()
+        dashboard = query.dashboard()
+        return Response(dashboard)
+
 
 
 # 각 곡에 대한 세부 정보 View
@@ -70,6 +65,7 @@ class TrackView(APIView):
         melon_queryset = Melon.objects.filter(m_song=pk, m_artist=param, m_time=current_time)
         bugs_queryset = Bugs.objects.filter(b_song=pk, b_artist=param, b_time=current_time)
         genie_queryset = Genie.objects.filter(g_song=pk, g_artist=param, g_time=current_time)
+
 
         if not melon_queryset.exists() and not bugs_queryset.exists() and not genie_queryset.exists():
             return HttpResponseBadRequest()
@@ -135,7 +131,6 @@ class DB_Utils:
 
     def queryExecutor(self, db, sql, params):
         conn = pymysql.connect(host=config('DB_HOST'), port=int(config('DB_PORT')), user=config('DB_USER'), password=config('DB_PASSWORD'), db=config('DB_NAME'), charset='utf8')
-
         try:
             with conn.cursor(pymysql.cursors.DictCursor) as cursor:     # dictionary based cursor
                 cursor.execute(sql, params)
@@ -150,45 +145,97 @@ class DB_Utils:
 
 class DB_Queries:
     # 모든 검색문은 여기에 각각 하나의 메소드로 정의
+    def totalChart(self):
+        sql = "SELECT * FROM api_total order by date desc limit 100"
+        util = DB_Utils()
+        params = ()
+        tuples = util.queryExecutor(db=config('DB_NAME'), sql=sql, params=params)
+        tuples = sorted(tuples, key=lambda x: (-x['weight']))
+
+        for rowIDX in range(len(tuples)):
+            try:
+                sql2 = "SELECT link FROM api_youtube where song=%s"
+                params = (tuples[rowIDX]['song'])
+                util = DB_Utils()
+                youtube = util.queryExecutor(db=config('DB_NAME'), sql=sql2, params=params)
+                tuples[rowIDX]['link'] = youtube[0]['link']
+            except:
+                continue
+        return tuples
 
     def currentTimeChart(self, site):
         sql = "SELECT * FROM "
-        sql2 = site + " where date='" + str(datetime.now().date()) + "' and time=" + str(datetime.now().hour)
+        sql2 = site + " order by id desc limit 100"
         sql += sql2
         util = DB_Utils()
         params = ()
         tuples = util.queryExecutor(db=config('DB_NAME'), sql=sql, params=params)
-        return tuples
-    def totalChart(self):
-        sql = """(select * from (SELECT * FROM api_bugs order by b_date desc limit 100) b 
-        left outer join (select * from api_genie order by g_date desc limit 100) g 
-        on b.b_song=g.g_song and b.b_artist=g.g_artist 
-        left outer join (select * from api_melon order by m_date desc limit 100) m 
-        on b.b_song=m.m_song and b.b_artist=m.m_artist order by b_date) 
-        union 
-        (select * from (SELECT * FROM api_bugs order by b_date desc limit 100) b 
-        right outer join (select * from api_genie order by g_date desc limit 100) g 
-        on g.g_song=b.b_song and g.g_artist=b.b_artist 
-        left outer join (select * from api_melon order by m_date desc limit 100) m 
-        on g.g_song=m.m_song and g.g_artist=m.m_artist order by b_date)
-         union 
-        (select * from (SELECT * FROM api_bugs order by b_date desc limit 100) b 
-        right outer join  ((select * from api_genie order by g_date desc limit 100) g 
-        right outer join (select * from api_melon order by m_date desc limit 100) m 
-        on m.m_song=g.g_song and g.g_artist=m.m_artist) on m.m_song=b.b_song and m.m_artist=b.b_artist order by b_date)"""
-        util = DB_Utils()
-        params = ()
-        tuples = util.queryExecutor(db=config('DB_NAME'), sql=sql, params=params)
+        chartData = []
         for rowIDX in range(len(tuples)):
-            if tuples[rowIDX]['g_weight'] == None:
-                tuples[rowIDX]['g_weight'] = 0
-            if tuples[rowIDX]['b_weight'] == None:
-                tuples[rowIDX]['b_weight'] = 0
-            if tuples[rowIDX]['m_weight'] == None:
-                tuples[rowIDX]['m_weight'] = 0
-            tuples[rowIDX]['total_weight'] = tuples[rowIDX]['b_weight'] + tuples[rowIDX]['m_weight'] + tuples[rowIDX]['g_weight']
+            tmp = {}
+            if site == "api_bugs":
+                tmp['rank'] = tuples[rowIDX]['b_rank']
+                tmp['song'] = tuples[rowIDX]['b_song']
+                tmp['artist'] = tuples[rowIDX]['b_artist']
+                tmp['like'] = tuples[rowIDX]['b_like']
+                tmp['coverImg'] = tuples[rowIDX]['b_coverImg']
+                tmp['date'] = tuples[rowIDX]['b_date']
+                tmp['time'] = tuples[rowIDX]['b_time']
+                tmp['weight'] = tuples[rowIDX]['b_weight']
+            if site == "api_genie":
+                tmp['rank'] = tuples[rowIDX]['g_rank']
+                tmp['song'] = tuples[rowIDX]['g_song']
+                tmp['artist'] = tuples[rowIDX]['g_artist']
+                tmp['like'] = tuples[rowIDX]['g_like']
+                tmp['coverImg'] = tuples[rowIDX]['g_coverImg']
+                tmp['date'] = tuples[rowIDX]['g_date']
+                tmp['time'] = tuples[rowIDX]['g_time']
+                tmp['weight'] = tuples[rowIDX]['g_weight']
+            if site == "api_melon":
+                tmp['rank'] = tuples[rowIDX]['m_rank']
+                tmp['song'] = tuples[rowIDX]['m_song']
+                tmp['artist'] = tuples[rowIDX]['m_artist']
+                tmp['like'] = tuples[rowIDX]['m_like']
+                tmp['coverImg'] = tuples[rowIDX]['m_coverImg']
+                tmp['date'] = tuples[rowIDX]['m_date']
+                tmp['time'] = tuples[rowIDX]['m_time']
+                tmp['weight'] = tuples[rowIDX]['m_weight']
+            chartData.append(tmp)
+        chartData = sorted(chartData, key=lambda x: (-x['weight']))
 
-        tuples = sorted(tuples, key=lambda x: (-x['total_weight']))
-        for rowIDX in range(len(tuples)):
-            tuples[rowIDX]['total_rank'] = rowIDX+1
-        return tuples[:100]
+        for rowIDX in range(len(chartData)):
+            try:
+                sql2 = "SELECT link FROM api_youtube where song=%s"
+                params = (chartData[rowIDX]['song'])
+                util = DB_Utils()
+                youtube = util.queryExecutor(db=config('DB_NAME'), sql=sql2, params=params)
+                chartData[rowIDX]['link'] = youtube[0]['link']
+            except:
+                continue
+        return chartData
+
+    def dashboard(self):
+        tuples = self.totalChart()
+        dashboard = []
+        for rowIDX in range(10):
+            tmp = {}
+            tmp['rank'] = tuples[rowIDX]['rank']
+            tmp['song'] = tuples[rowIDX]['song']
+            tmp['artist'] = tuples[rowIDX]['artist']
+            sql = "select weight, date, time from api_total where song=%s"
+            params = (tmp['song'])
+            util = DB_Utils()
+            weights = util.queryExecutor(db=config('DB_NAME'), sql=sql, params=params)
+            date_list = []
+            time_list = []
+            weights_list = []
+            for idx in range(len(weights)):
+                date_list.append(weights[idx]['date'])
+                time_list.append(weights[idx]['time'])
+                weights_list.append(weights[idx]['weight'])
+            tmp['date'] = date_list[len(date_list)-49:]
+            tmp['time'] = time_list[len(time_list)-49:]
+            tmp['weight'] = weights_list[len(weights_list)-49:]
+            dashboard.append(tmp)
+        return dashboard
+

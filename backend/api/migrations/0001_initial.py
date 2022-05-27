@@ -53,4 +53,16 @@ class Migration(migrations.Migration):
                 ('m_weight', models.FloatField()),
             ],
         ),
+        migrations.CreateModel(
+            name='Total',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('total_rank', models.IntegerField()),
+                ('song', models.CharField(max_length=50)),
+                ('artist', models.CharField(max_length=50)),
+                ('coverImg', models.URLField()),
+                ('date', models.DateTimeField()),
+                ('time', models.IntegerField()),
+            ],
+        ),
     ]

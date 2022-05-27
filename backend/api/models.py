@@ -31,3 +31,17 @@ class Genie(models.Model):
     g_date = models.DateTimeField()
     g_time = models.IntegerField()
     g_weight = models.FloatField(default=0)
+
+class Total(models.Model):
+    rank = models.IntegerField()
+    song = models.CharField(max_length=50)
+    artist = models.CharField(max_length=50)
+    coverImg = models.URLField()
+    date = models.DateTimeField()
+    time = models.IntegerField()
+    weight = models.FloatField(default=0)
+
+class Youtube(models.Model):
+
+    song = models.CharField(max_length=50)
+    link = models.CharField(max_length=3000)
