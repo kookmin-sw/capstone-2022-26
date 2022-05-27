@@ -1,92 +1,76 @@
-import { React, useEffect, useRef } from "react";
+import { React, useEffect } from 'react';
+import AOS from 'aos';
+import '../../assets/HomePage.css';
+import 'aos/dist/aos.css';
 
-import "../../assets/HomePage.css";
-
-const DIVIDER_HEIGHT = 5;
+import mainPage from '../../assets/mainPage.png';
+import dashboard from '../../assets/dashboard.png';
+import chart from '../../assets/chart.png';
 
 function HomePage() {
-  const outerDivRef = useRef();
-  // const [scrollIndex, setScrollIndex] = useState(1);
   useEffect(() => {
-    const wheelHandler = (e) => {
-      e.preventDefault();
-      const { deltaY } = e;
-      const { scrollTop } = outerDivRef.current; // 스크롤 위쪽 끝부분 위치
-      const pageHeight = window.innerHeight; // 화면 세로길이, = 100vh
+    AOS.init({
+      duration: 1200
+    });
+  }, [])
 
-      if (deltaY > 0) {
-        // 스크롤 내릴 때
-        if (scrollTop >= 0 && scrollTop < pageHeight) {
-          // 현재 1페이지
-          outerDivRef.current.scrollTo({
-            top: pageHeight + DIVIDER_HEIGHT,
-            left: 0,
-            behavior: "smooth",
-          });
-          // setScrollIndex(2);
-        } else if (scrollTop >= pageHeight && scrollTop < pageHeight * 2) {
-          // 현재 2페이지
-          outerDivRef.current.scrollTo({
-            top: pageHeight * 2 + DIVIDER_HEIGHT * 2,
-            left: 0,
-            behavior: "smooth",
-          });
-          // setScrollIndex(3);
-        } else {
-          // 현재 3페이지
-          outerDivRef.current.scrollTo({
-            top: pageHeight * 2 + DIVIDER_HEIGHT * 2,
-            left: 0,
-            behavior: "smooth",
-          });
-          // setScrollIndex(3);
-        }
-      } else {
-        // 스크롤 올릴 때
-        // eslint-disable-next-line no-lonely-if
-        if (scrollTop >= 0 && scrollTop < pageHeight) {
-          // 현재 1페이지
-          outerDivRef.current.scrollTo({
-            top: 0,
-            left: 0,
-            behavior: "smooth",
-          });
-          // setScrollIndex(1);
-        } else if (scrollTop >= pageHeight && scrollTop < pageHeight * 2) {
-          // 현재 2페이지
-          outerDivRef.current.scrollTo({
-            top: 0,
-            left: 0,
-            behavior: "smooth",
-          });
-          // setScrollIndex(1);
-        } else {
-          // 현재 3페이지
-          outerDivRef.current.scrollTo({
-            top: pageHeight + DIVIDER_HEIGHT,
-            left: 0,
-            behavior: "smooth",
-          });
-          // setScrollIndex(2);
-        }
-      }
-    };
-    const outerDivRefCurrent = outerDivRef.current;
-    outerDivRefCurrent.addEventListener("wheel", wheelHandler);
-    return () => {
-      outerDivRefCurrent.removeEventListener("wheel", wheelHandler);
-    };
-  }, []);
-  return (
-    <div ref={outerDivRef} className="outer">
-      {/* <Dots scrollIndex={scrollIndex} /> */}
-      <div className="inner bg-yellow">1</div>
-      <div className="divider" />
-      <div className="inner bg-blue">2</div>
-      <div className="divider" />
-      <div className="inner bg-pink">3</div>
+  return(
+    <div className='page'>
+      <div className='subtitle' data-aos='fade-up'>Capstone 26</div>
+      <div className='title' data-aos='fade-up'>멜벅지</div>
+      <div style={{marginTop: '10vh', textAlign: 'center'}}>
+        <img className='main-img' src={mainPage} alt='main' data-aos='fade-up' />
+      </div>
+
+      <div style={{marginTop: '30vh', textAlign: 'right'}}>
+        <div style={{float: 'left'}}>
+          <div data-aos='fade-right' style={{marginTop: '22vh', paddingLeft: '10vw', fontSize: '2em'}}>Real-Time Chart</div>
+          <div data-aos='fade-right' style={{paddingLeft: '10vw', color: 'gray'}}>with Melon, Genie, Bugs</div>
+        </div>
+        <img className='dashboard-img' src={dashboard} alt='dashboard' data-aos='fade-left' />
+      </div>
+
+      <div style={{marginTop: '30vh', textAlign: 'left'}}>
+        <div style={{float: 'right'}}>
+          <div data-aos='fade-left' style={{marginTop: '30vh', paddingRight: '15vw', fontSize: '2em'}}>Scoring by Weight</div>
+          <div data-aos='fade-left' style={{paddingRight: '15vw', color: 'gray'}}>up to 100 songs info</div>
+        </div>
+        <img className='chart-img' src={chart} alt='chart' data-aos='fade-right' />
+      </div>
+
+      <div className='subtitle' data-aos='fade-up' style={{marginTop: '50vh'}}>Contributors</div>
+
+      <div>
+        <div data-aos='fade-right' style={{fontSize: '2em', marginTop: '30vh', textAlign: 'left', marginLeft: '47vw'}}>Data Analysis</div>
+        <div data-aos='fade-left' style={{paddingRight: '15vw', fontSize: '2em'}}>박태범</div>
+        <div data-aos='fade-left' style={{paddingRight: '15vw', color: 'gray'}}>20171626</div>
+        <div data-aos='fade-left' style={{paddingRight: '15vw', color: 'gray'}}>ppttbb9461@kookmin.ac.kr</div>
+      </div>
+
+      <div>
+        <div data-aos='fade-left' style={{fontSize: '2em', marginTop: '30vh', textAlign: 'right', marginRight: '50vw'}}>Frontend</div>
+        <div data-aos='fade-right' style={{paddingLeft: '10vw', fontSize: '2em'}}>서범석</div>
+        <div data-aos='fade-right' style={{paddingLeft: '10vw', color: 'gray'}}>20171628</div>
+        <div data-aos='fade-right' style={{paddingLeft: '10vw', color: 'gray'}}>sbs9805@kookmin.ac.kr</div>
+      </div>
+
+      <div>
+        <div data-aos='fade-right' style={{fontSize: '2em', marginTop: '30vh', textAlign: 'left', marginLeft: '47vw'}}>Design</div>
+        <div data-aos='fade-left' style={{paddingRight: '15vw', fontSize: '2em'}}>서필립</div>
+        <div data-aos='fade-left' style={{paddingRight: '15vw', color: 'gray'}}>20171631</div>
+        <div data-aos='fade-left' style={{paddingRight: '15vw', color: 'gray'}}>seophillip10@gmail.com</div>
+      </div>
+
+      <div>
+        <div data-aos='fade-left' style={{fontSize: '2em', marginTop: '30vh', textAlign: 'right', marginRight: '50vw'}}>Backend</div>
+        <div data-aos='fade-right' style={{paddingLeft: '10vw', fontSize: '2em'}}>이인호</div>
+        <div data-aos='fade-right' style={{paddingLeft: '10vw', color: 'gray'}}>20171675</div>
+        <div data-aos='fade-right' style={{paddingLeft: '10vw', color: 'gray'}}>inhoking@kookmin.ac.kr</div>
+      </div>
+
+      <div style={{height: '20vh'}} />
     </div>
-  );
+  )
 }
 
 export default HomePage;
